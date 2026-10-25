@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>بيئة بايثون للطالبات</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/pyodide@0.24.1/pyodide.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/firebase@10.14.1/firebase-app-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/firebase@10.14.1/firebase-auth-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/firebase@10.14.1/firebase-firestore-compat.js"></script>
+<style>
+:root{color-scheme:dark;--bg:#0b1220;--pn:#111a2e;--ln:#22304d;--tx:#e6edf7;--mu:#8ea0bd;--ac:#10b981;--am:#f59e0b;--er:#f87171;--ed:#0d1527;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:Cairo,sans-serif;font-size:15px}
+button{font-family:inherit;cursor:pointer;border:0;border-radius:10px;padding:7px 14px;font-weight:600;font-size:13px;background:#1c2a47;color:var(--tx)}
+button:hover{background:#26375c}
+.pri{background:var(--ac);color:#04251a}.pri:hover{background:#34d399}
+.am{background:#4f46e5}.am:hover{background:#6366f1}
+header{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--ln);background:var(--pn)}
+h1{font-size:18px;margin:0}
+#st{font-size:12px;color:var(--mu);display:flex;align-items:center;gap:6px}
+#dot{width:9px;height:9px;border-radius:50%;background:var(--am)}
+main{display:grid;grid-template-columns:310px 1fr;gap:12px;padding:12px;max-width:1400px;margin:auto}
+@media(max-width:860px){main{grid-template-columns:1fr}}
+.card{background:var(--pn);border:1px solid var(--ln);border-radius:14px;padding:14px}
+aside{display:flex;flex-direction:column;gap:12px}
+h2{font-size:14px;margin:0 0 8px;color:var(--ac)}
+#desc{white-space:pre-line;line-height:1.7;color:#cbd5e1;font-size:14px}
+.exp{margin-top:10px;background:var(--ed);border-radius:10px;padding:8px 10px;direction:ltr;text-align:left;font:13px 'Fira Code',monospace;color:#6ee7b7;white-space:pre-wrap}
+#fb{margin-top:10px;padding:9px 11px;border-radius:10px;font-size:13px;display:none}
+.ok{background:#064e3b;color:#a7f3d0}.no{background:#4c1d1d;color:#fecaca}
+.file{display:flex;justify-content:space-between;align-items:center;direction:ltr;padding:6px 10px;border-radius:8px;cursor:pointer;font:13px 'Fira Code',monospace;color:#cbd5e1}
+.file:hover{background:#1a2744}.file.on{background:#1e3a5f;color:#fff}
+.file b{color:var(--mu);font-weight:400;padding:0 4px}.file b:hover{color:var(--er)}
+#ac{position:absolute;display:none;width:360px;max-height:230px;overflow:auto;background:#16213a;border:1px solid #34476d;border-radius:10px;z-index:5;box-shadow:0 8px 24px #0008}
+.ai{padding:5px 10px;display:flex;flex-direction:column;gap:1px;cursor:pointer}.ai.on{background:#1e3a5f}
+.ai b{font:13px 'Fira Code',monospace;color:#6ee7b7}.ai i{font:12px 'Fira Code',monospace;color:var(--mu);font-style:normal}.ai span{direction:rtl;text-align:right;font-size:12px;color:#cbd5e1}
+.row{display:flex;gap:6px;margin-top:8px}
+input,textarea,select{font-family:inherit;background:var(--ed);color:var(--tx);border:1px solid var(--ln);border-radius:9px;padding:7px 10px;font-size:13px;width:100%}
+.center{display:flex;flex-direction:column;gap:12px;min-width:0}
+.bar{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.fname{direction:ltr;font:13px 'Fira Code',monospace;color:var(--am)}
+.ed{position:relative;display:flex;direction:ltr;background:var(--ed);border:1px solid var(--ln);border-radius:10px;height:320px;overflow:hidden}
+#gut,#code{font:14px/22px 'Fira Code',monospace;padding:10px 8px;margin:0}
+#gut{width:46px;text-align:right;color:#475a7d;overflow:hidden;user-select:none;border-right:1px solid var(--ln);white-space:pre}
+#code{flex:1;border:0;border-radius:0;background:transparent;resize:none;white-space:pre;overflow:auto;outline:0;tab-size:4;text-align:left;direction:ltr}
+#term{direction:ltr;text-align:left;font:13px/1.55 'Fira Code',monospace;height:250px;overflow:auto;background:#070d19;border:1px solid var(--ln);border-radius:10px;padding:10px;white-space:pre-wrap;word-break:break-all}
+.err{color:var(--er)}.sys{color:var(--mu)}.inp{color:var(--am)}.pr{color:#7dd3fc}
+.tin{background:transparent;border:0;border-bottom:1px solid var(--am);border-radius:0;color:var(--am);font:13px 'Fira Code',monospace;padding:0 2px;width:60%;outline:0;direction:ltr}
+.repl{display:flex;direction:ltr;align-items:center;gap:8px;margin-top:8px;font:13px 'Fira Code',monospace}
+.repl input{font:13px 'Fira Code',monospace;direction:ltr}
+.modal{position:fixed;inset:0;background:#000a;display:none;align-items:center;justify-content:center;padding:16px;z-index:50}
+.modal.on{display:flex}
+.box{background:var(--pn);border:1px solid var(--ln);border-radius:16px;padding:18px;max-width:560px;width:100%;max-height:90vh;overflow:auto;display:flex;flex-direction:column;gap:8px}
+label{font-size:12px;color:var(--mu)}
+.sub{border:1px solid var(--ln);border-radius:10px;margin-top:8px;overflow:hidden}.sh{padding:8px 10px;cursor:pointer;background:#16213a;font-size:13px}
+.sub pre{direction:ltr;text-align:left;margin:0;padding:8px 10px;font:12px/1.5 'Fira Code',monospace;white-space:pre-wrap;background:var(--ed)}
+</style>
+</head>
+<body>
+<header>
+  <div><h1>🐍 بيئة بايثون للطالبات</h1><div id="st"><span id="dot"></span><span id="stt">جارٍ تجهيز بايثون…</span></div></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap"><button id="pBtn">👤 سجّلي اسمك</button><button class="pri" id="sBtn" style="display:none">📥 التسليمات</button><button class="am" id="tBtn">لوحة المعلمة</button></div>
+</header>
+<main>
+<aside>
+  <div class="card">
+    <h2 id="tt">المهمة</h2><div id="desc"></div>
+    <div class="exp" id="exp"></div>
+    <div class="row"><button class="pri" id="chk" style="flex:1">تحقق من حلي</button><button id="rst" style="flex:1">استعادة القالب</button></div>
+    <div id="fb"></div>
+  </div>
+  <div class="card">
+    <h2>الملفات</h2><div id="files"></div>
+    <div class="row"><input id="nf" placeholder="اسم ملف جديد: data.txt" dir="ltr"><button id="addf">+</button></div>
+  </div>
+</aside>
+<section class="center">
+  <div class="card">
+    <div class="bar"><span class="fname" id="fn">main.py</span>
+      <div style="display:flex;gap:6px"><span id="subst" style="font-size:12px;color:var(--mu);align-self:center"></span><button class="am" id="sub">📤 تسليم للمعلمة</button><button id="stop" style="display:none">⏹ إيقاف</button><button class="pri" id="run">▶ تشغيل (Ctrl+Enter)</button></div></div>
+    <div class="ed"><pre id="gut">1</pre><textarea id="code" spellcheck="false" autocapitalize="off" autocomplete="off"></textarea><div id="ac"></div></div>
+  </div>
+  <div class="card">
+    <div class="bar"><h2 style="margin:0">الطرفية</h2><button id="clr">مسح</button></div>
+    <div id="term"></div>
+    <div class="repl"><span class="pr" id="ps">&gt;&gt;&gt;</span><input id="rin" placeholder="جرّبي أمرًا مباشرًا مثل: 2 + 3" autocomplete="off"></div>
+  </div>
+</section>
+</main>
+
+<div class="modal" id="tm"><div class="box">
+  <h2>لوحة المعلمة: إنشاء سؤال</h2>
+  <label>عنوان السؤال</label><input id="t1">
+  <label>المستوى</label><select id="t2"><option>مبتدئ</option><option>متوسط</option><option>متقدم</option></select>
+  <label>نص السؤال</label><textarea id="t3" rows="4"></textarea>
+  <label>كود البداية</label><textarea id="t4" rows="4" dir="ltr" style="font-family:'Fira Code',monospace"></textarea>
+  <label>المخرجات المتوقعة (للتحقق التلقائي)</label><textarea id="t5" rows="2" dir="ltr"></textarea>
+  <label>رابط السؤال للطالبات</label><input id="t6" readonly dir="ltr">
+  <div class="row"><button class="pri" id="t7" style="flex:1">تطبيق الآن</button><button id="t8" style="flex:1">نسخ الرابط</button><button id="t9">إغلاق</button></div>
+</div></div>
+
+<div class="modal" id="pm"><div class="box">
+  <h2>بيانات الطالبة</h2>
+  <label>الاسم</label><input id="pnm" maxlength="60" placeholder="اكتبي اسمك الكامل">
+  <label>الصف</label><select id="pcl"><option>عاشر 1</option><option>عاشر 2</option><option>عاشر 3</option><option>عاشر 4</option><option>عاشر 5</option></select>
+  <div class="row"><button class="pri" id="psv" style="flex:1">ابدئي</button></div>
+</div></div>
+<div class="modal" id="sm"><div class="box" style="max-width:760px">
+  <h2>تسليمات الطالبات</h2>
+  <div class="row"><select id="sf"><option value="">كل الصفوف</option><option>عاشر 1</option><option>عاشر 2</option><option>عاشر 3</option><option>عاشر 4</option><option>عاشر 5</option></select><span id="sc" style="align-self:center;white-space:nowrap;font-size:13px"></span><button id="sx">إغلاق</button></div>
+  <div id="sl"></div>
+</div></div>
+<div class="modal" id="lm"><div class="box">
+  <h2>دخول المعلمة</h2>
+  <label>البريد الإلكتروني</label><input id="lem" type="email" dir="ltr">
+  <label>كلمة المرور</label><input id="lpw" type="password" dir="ltr">
+  <div id="lerr" style="color:var(--er);font-size:12px"></div>
+  <div class="row"><button class="pri" id="lgo" style="flex:1">دخول</button><button id="lcl">إغلاق</button></div>
+</div></div>
+<script>
+const $=id=>document.getElementById(id);
+// ضعي هنا إعدادات مشروع Firebase من Project settings ثم Your apps ثم Config. مثال: {apiKey:"...",authDomain:"...",projectId:"...",appId:"..."}
+const FIREBASE_CONFIG={apiKey:"AIzaSyA1YQbYlMfshxvL7qNlGEQ6uAVK10jJ6Ag",authDomain:"python-answers.firebaseapp.com",projectId:"python-answers",storageBucket:"python-answers.firebasestorage.app",messagingSenderId:"3335708296",appId:"1:3335708296:web:245c441fe41bfeab6b893d"};
+// المعلمات وصفوفهن: أضيفي سطرًا لكل معلمة بنفس البريد المكتوب في قواعد Firestore
+const TEACHERS={'engwafa.allyan@gmail.com':['عاشر 1','عاشر 2','عاشر 3','عاشر 4','عاشر 5']};
+let fb=null;
+function initFb(){try{if(FIREBASE_CONFIG&&window.firebase){firebase.initializeApp(FIREBASE_CONFIG);fb={db:firebase.firestore(),auth:firebase.auth()};return true}}catch(e){}return false}
+const DEF={title:'ترحيب بايثون',difficulty:'مبتدئ',desc:'اكتبي برنامجًا يطبع الجملة التالية:\nHello, Python!\n\nتلميح: استخدمي الدالة print وتأكدي من علامات التنصيص.',starterCode:'# اكتبي الكود هنا\n',expectedOutput:'Hello, Python!'};
+let pyErr=null,py=null,files={},cur='main.py',cap=[],task=DEF,more=false,hist=[],hi=0,sess=null,lastRun=null,me=null,db=null,usr=null,uid=null,unsub=null,subs=[];
+const PYSETUP=`
+import code,sys,traceback,linecache,builtins,random
+class NeedInput(BaseException): pass
+class Stdin:
+    def __init__(s,e): s.e=e
+    def readline(s): return s.e._input()+'\\n'
+class Con(code.InteractiveConsole):
+    def runcode(s,c):
+        try: exec(c,s.locals)
+        except SystemExit: pass
+        except NeedInput: raise
+        except: s.showtraceback()
+class Env:
+    def __init__(s):
+        s.ans=[]; s.i=0; s.reset(); builtins.input=s._input; sys.stdin=Stdin(s)
+    def reset(s):
+        s.ns={'__name__':'__main__'}; s.con=Con(s.ns)
+    def setin(s,a): s.ans=list(a); s.i=0
+    def _input(s,prompt=''):
+        o=sys.stdout; o.write(str(prompt)); o.flush()
+        if s.i<len(s.ans):
+            a=s.ans[s.i]; s.i+=1; o.write(a+'\\n'); o.flush(); return a
+        raise NeedInput()
+    def run(s,src,fn,a,seed):
+        s.reset(); s.setin(a); random.seed(seed)
+        linecache.cache[fn]=(len(src),None,src.splitlines(True),fn)
+        try: exec(compile(src,fn,'exec'),s.ns)
+        except SystemExit: pass
+        except NeedInput: return 2
+        except BaseException:
+            t,e,tb=sys.exc_info(); traceback.print_exception(t,e,tb.tb_next)
+        sys.stdout.flush(); return 0
+    def push(s,l,a):
+        pre=list(s.con.buffer); s.setin(a)
+        try: r=int(s.con.push(l))
+        except NeedInput:
+            s.con.buffer=pre; return 2
+        sys.stdout.flush(); return r
+env=Env()
+`;
+function out(t,c){const d=document.createElement('span');if(c)d.className=c;d.textContent=t;const o=$('term');o.appendChild(d);o.scrollTop=o.scrollHeight}
+function nums(){const n=$('code').value.split('\n').length;$('gut').textContent=Array.from({length:n},(_,i)=>i+1).join('\n')}
+function persist(){try{localStorage.setItem('pylab_files',JSON.stringify(files))}catch(e){}}
+function save(){files[cur]=$('code').value;persist()}
+function show(n){save();cur=n;$('code').value=files[n]||'';$('fn').textContent=n;nums();drawFiles()}
+function drawFiles(){const f=$('files');f.innerHTML='';Object.keys(files).forEach(n=>{const d=document.createElement('div');d.className='file'+(n===cur?' on':'');d.textContent=n;const x=document.createElement('b');x.textContent='×';x.onclick=e=>{e.stopPropagation();if(Object.keys(files).length<2)return;delete files[n];if(cur===n)cur=Object.keys(files)[0];$('code').value=files[cur];$('fn').textContent=cur;nums();persist();drawFiles()};d.appendChild(x);d.onclick=()=>show(n);f.appendChild(d)})}
+function setTask(t){task={...DEF,...t};$('tt').textContent='المهمة: '+task.title+' ('+task.difficulty+')';$('desc').textContent=task.desc;const e=$('exp');if(task.expectedOutput&&task.expectedOutput.trim()){e.style.display='block';e.textContent='المخرجات المتوقعة:\n'+task.expectedOutput}else e.style.display='none';files={'main.py':task.starterCode||''};cur='main.py';$('code').value=files[cur];$('fn').textContent=cur;nums();drawFiles();$('fb').style.display='none'}
+async function init(){
+  try{
+    py=await loadPyodide();
+    const d1=new TextDecoder(),d2=new TextDecoder();
+    py.setStdout({isatty:true,write:b=>{wo(d1.decode(b,{stream:true}));return b.length}});
+    py.setStderr({isatty:true,write:b=>{wo(d2.decode(b,{stream:true}),'err');return b.length}});
+    py.runPython(PYSETUP);
+    $('dot').style.background='#10b981';$('stt').textContent='بايثون 3 جاهزة';
+    out('Python '+py.runPython('import sys;sys.version.split()[0]')+' جاهزة. اكتبي كودك ثم اضغطي تشغيل.\n','sys');
+  }catch(e){py=null;pyErr=String(e);$('dot').style.background='#f87171';$('stt').textContent='تعذر تحميل بايثون';out('تعذر تحميل محرك بايثون: '+e+'\nإن كان الاتصال محجوبًا في هذه الصفحة، افتحي الملف من جهازك مع اتصال بالإنترنت.\n','err')}
+}
+function sync(){try{py.FS.readdir('.').forEach(n=>{if(n[0]==='.'||n==='.'||n==='..')return;const st=py.FS.stat(n);if(py.FS.isFile(st.mode)){const c=py.FS.readFile(n,{encoding:'utf8'});if(!(n in files)||files[n]!==c){files[n]=c;if(n===cur)$('code').value=c}}});nums();persist();drawFiles()}catch(e){}}
+function wo(t,c){const s=sess;if(!s){out(t,c);return}
+  if(c==='err'){if(s.written>=s.shown)out(t,'err');return}
+  const st=s.written;s.written+=t.length;if(s.written<=s.shown)return;
+  const x=t.slice(Math.max(0,s.shown-st));out(x);s.shown+=x.length;cap.push(x)}
+function cancel(){if(!sess)return;sess=null;document.querySelectorAll('.tin').forEach(x=>x.remove());$('stop').style.display='none';out('^C\n','sys')}
+function run(cb){
+  if(!py){out(pyErr?'تعذر تحميل محرك بايثون في هذه الصفحة. حمّلي الملف وافتحيه من جهازك مع اتصال بالإنترنت.\n':'بايثون ما زالت تُحمَّل. انتظري حتى يظهر "بايثون 3 جاهزة" في الأعلى.\n','err');return false}
+  cancel();save();cap=[];$('term').textContent='';out('$ python '+cur+'\n','sys');
+  sess={mode:'run',answers:[],shown:0,written:0,snap:{...files},src:files[cur],fn:cur,seed:Math.floor(Math.random()*1e9),cb};
+  play();return true;
+}
+function play(){
+  const s=sess;s.written=0;let r=0;
+  try{const e=py.globals.get('env');
+    if(s.mode==='run'){
+      for(const n of py.FS.readdir('.')){if(n[0]!=='.'&&!(n in s.snap)){try{py.FS.unlink(n)}catch(x){}}}
+      for(const n in s.snap)py.FS.writeFile(n,s.snap[n]);
+      r=e.run(s.src,s.fn,py.toPy(s.answers),s.seed);
+    }else r=e.push(s.line,py.toPy(s.answers));
+  }catch(x){out(String(x)+'\n','err')}
+  if(r===2)waitIn();else fin(r);
+}
+function waitIn(){
+  $('stop').style.display='';
+  const i=document.createElement('input');i.className='tin';i.dir='auto';i.autocomplete='off';
+  $('term').appendChild(i);i.focus();$('term').scrollTop=$('term').scrollHeight;
+  i.onkeydown=ev=>{if(ev.key==='Enter'){const a=i.value;i.remove();out(a+'\n','inp');sess.shown+=a.length+1;cap.push(a+'\n');sess.answers.push(a);play()}};
+}
+function fin(r){
+  const s=sess;sess=null;$('stop').style.display='none';
+  if(s.mode==='run'){sync();more=false;$('ps').textContent='>>>';lastRun={code:s.src,out:cap.join(''),ok:null}}
+  else{more=r===1;$('ps').textContent=more?'...':'>>>'}
+  if(s.cb)s.cb();
+}
+function check(){
+  run(()=>{const f=$('fb');const got=cap.join('').replace(/\r/g,'').trim(),exp=(task.expectedOutput||'').replace(/\r/g,'').trim();
+  f.style.display='block';
+  if(!exp){f.className='ok';f.textContent='تم التشغيل. لا توجد مخرجات متوقعة لهذا السؤال، راجعي النتيجة في الطرفية.';return}
+  if(lastRun)lastRun.ok=(got===exp);
+  if(got===exp){f.className='ok';f.textContent='أحسنتِ! الحل صحيح ✅'}
+  else{f.className='no';f.textContent='المخرجات لا تطابق المتوقع بعد. قارني بين ما ظهر في الطرفية وما هو مطلوب.'}
+  })
+}
+$('run').onclick=()=>run();$('stop').onclick=cancel;$('chk').onclick=check;$('clr').onclick=()=>{$('term').textContent=''};
+$('rst').onclick=()=>{$('code').value=task.starterCode||'';save();nums();$('fb').style.display='none'};
+$('addf').onclick=()=>{const n=$('nf').value.trim();if(!n||/[\/\\]/.test(n)||n in files)return;save();files[n]='';$('nf').value='';show(n)};
+const ta=$('code');
+const SM=[['find','sub, start, end','يعيد موضع أول ظهور للنص أو -1 إن لم يوجد'],['rfind','sub','موضع آخر ظهور للنص أو -1'],['index','sub','مثل find لكن يرفع خطأ ValueError إن لم يجده'],['count','sub','عدد مرات ظهور النص داخل السلسلة'],['replace','old, new, count','استبدال نص بنص آخر ويعيد سلسلة جديدة'],['split','sep, maxsplit','تقسيم السلسلة إلى قائمة عند الفاصل'],['rsplit','sep, maxsplit','تقسيم من اليمين'],['splitlines','','تقسيم عند نهايات الأسطر'],['join','iterable','دمج عناصر قائمة بهذا النص كفاصل'],['strip','chars','حذف الفراغات من الطرفين'],['lstrip','chars','حذف الفراغات من البداية'],['rstrip','chars','حذف الفراغات من النهاية'],['upper','','تحويل كل الحروف إلى كبيرة'],['lower','','تحويل كل الحروف إلى صغيرة'],['title','','أول حرف من كل كلمة كبير'],['capitalize','','أول حرف فقط كبير'],['swapcase','','عكس حالة الحروف'],['casefold','','تحويل للحروف الصغيرة مناسب للمقارنة'],['startswith','prefix','هل تبدأ السلسلة بهذا النص؟ True أو False'],['endswith','suffix','هل تنتهي بهذا النص؟ True أو False'],['isdigit','','هل كل الحروف أرقام؟'],['isalpha','','هل كل الحروف أحرف؟'],['isalnum','','هل أحرف أو أرقام فقط؟'],['isspace','','هل كلها فراغات؟'],['isupper','','هل كل الحروف كبيرة؟'],['islower','','هل كل الحروف صغيرة؟'],['center','width, fillchar','توسيط النص في عرض محدد'],['ljust','width, fillchar','محاذاة لليسار بتعبئة'],['rjust','width, fillchar','محاذاة لليمين بتعبئة'],['zfill','width','تعبئة بأصفار من اليسار'],['format','*args','تنسيق النص باستخدام الأقواس {}'],['partition','sep','تقسيم إلى ثلاثة أجزاء: قبل والفاصل وبعد'],['removeprefix','prefix','حذف بداية معينة إن وجدت'],['removesuffix','suffix','حذف نهاية معينة إن وجدت'],['encode','encoding','تحويل النص إلى bytes']];
+const SR=['strip','lstrip','rstrip','lower','upper','title','capitalize','replace','join','format','center','ljust','rjust','zfill','swapcase','casefold','removeprefix','removesuffix'];
+let acI=[],acS=0,acP='';
+function acClose(){$('ac').style.display='none';acI=[]}
+function acDraw(){const b=$('ac');b.innerHTML='';acI.slice(0,40).forEach((x,i)=>{const d=document.createElement('div');d.className='ai'+(i===acS?' on':'');const n=document.createElement('b');n.textContent=x[0]+'('+x[1]+')';const s=document.createElement('span');s.textContent=x[2];d.append(n,s);d.onmousedown=e=>{e.preventDefault();acPick(i)};b.appendChild(d)});const o=b.querySelector('.on');if(o)o.scrollIntoView({block:'nearest'})}
+function acPick(i){const x=acI[i],p=ta.selectionStart,s=p-acP.length;ta.setRangeText(x[0]+'()',s,p,'end');if(x[1]){const c=s+x[0].length+1;ta.setSelectionRange(c,c)}acClose();nums();save();ta.focus()}
+function isStr(r,b){
+  if(r[0]==='"'||r[0]==="'")return true;
+  if(r===')'){const q=b.match(/(\w+)\([^()\n]*\)\.\w*$/);return !!q&&(q[1]==='input'||q[1]==='str'||SR.includes(q[1]))}
+  if(!/^[A-Za-z_]\w*$/.test(r))return false;
+  const a=ta.value.split('\n').some(l=>{const t=l.trim();if(!t.startsWith(r))return false;const z=t.slice(r.length).trim();if(z[0]!=='='||z[1]==='=')return false;const v=z.slice(1).trim();return /^[fFrR]?["']/.test(v)||v.startsWith('input(')||v.startsWith('str(')});
+  if(a)return true;
+  if(py){try{return py.runPython("isinstance(env.ns.get('"+r+"'),str)")}catch(e){}}
+  return false;
+}
+function ac(){
+  const p=ta.selectionStart,b=ta.value.slice(0,p);
+  const m=b.match(/(\w+|"[^"\n]*"|'[^'\n]*'|\))\.(\w*)$/);
+  if(!m||!isStr(m[1],b))return acClose();
+  acP=m[2];acI=SM.filter(x=>x[0].startsWith(acP));acS=0;
+  if(!acI.length||(acI.length===1&&acI[0][0]===acP))return acClose();
+  const ln=b.split('\n'),r=ln.length,e=$('ac');acDraw();e.style.display='block';
+  const w=ta.clientWidth+54;let left=54+ln[r-1].length*8.4-ta.scrollLeft;left=Math.max(54,Math.min(left,w-370));
+  let top=10+r*22-ta.scrollTop;const h=Math.min(230,acI.length*46);if(top+h>318)top=Math.max(0,top-22-h);
+  e.style.left=left+'px';e.style.top=top+'px';
+}
+ta.addEventListener('keydown',e=>{
+  if(!acI.length)return;
+  if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();e.stopImmediatePropagation();acS=(acS+(e.key==='ArrowDown'?1:acI.length-1))%acI.length;acDraw()}
+  else if((e.key==='Enter'||e.key==='Tab')&&!e.ctrlKey&&!e.metaKey){e.preventDefault();e.stopImmediatePropagation();acPick(acS)}
+  else if(e.key==='Escape')acClose();
+});
+ta.addEventListener('blur',()=>setTimeout(acClose,150));
+ta.addEventListener('input',()=>{nums();save();ac()});
+ta.addEventListener('scroll',()=>{$('gut').scrollTop=ta.scrollTop});
+ta.addEventListener('keydown',e=>{
+  if(e.key==='Tab'){e.preventDefault();ta.setRangeText('    ',ta.selectionStart,ta.selectionEnd,'end');nums()}
+  else if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();run()}
+  else if(e.key==='Enter'){const v=ta.value,p=ta.selectionStart,ls=v.lastIndexOf('\n',p-1)+1,line=v.slice(ls,p);let ind=line.match(/^\s*/)[0];if(/:\s*$/.test(line))ind+='    ';e.preventDefault();ta.setRangeText('\n'+ind,p,ta.selectionEnd,'end');nums()}
+});
+$('rin').addEventListener('keydown',e=>{
+  const i=$('rin');
+  if(e.key==='ArrowUp'&&hist.length){hi=Math.max(0,hi-1);i.value=hist[hi];e.preventDefault()}
+  else if(e.key==='ArrowDown'){hi=Math.min(hist.length,hi+1);i.value=hist[hi]||'';e.preventDefault()}
+  else if(e.key==='Enter'){
+    if(!py){out('بايثون لم تجهز بعد…\n','err');return}
+    if(sess)return;
+    const l=i.value;out($('ps').textContent+' '+l+'\n','pr');if(l.trim()){hist.push(l);hi=hist.length}
+    i.value='';sess={mode:'repl',line:l,answers:[],shown:0,written:0};play();
+  }
+});
+// teacher panel
+const enc=d=>btoa(unescape(encodeURIComponent(JSON.stringify(d)))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+const dec=s=>{try{s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';return JSON.parse(decodeURIComponent(escape(atob(s))))}catch(e){return null}};
+function tData(){return{title:$('t1').value.trim()||'تحدي بايثون',difficulty:$('t2').value,desc:$('t3').value.trim(),starterCode:$('t4').value,expectedOutput:$('t5').value.trim()}}
+function tLink(){$('t6').value=location.href.split('#')[0]+'#'+enc(tData())}
+$('tBtn').onclick=()=>{$('t1').value=task.title;$('t2').value=task.difficulty;$('t3').value=task.desc;$('t4').value=task.starterCode;$('t5').value=task.expectedOutput||'';tLink();$('tm').classList.add('on')};
+['t1','t2','t3','t4','t5'].forEach(i=>$(i).addEventListener('input',tLink));
+$('t9').onclick=()=>$('tm').classList.remove('on');
+$('t7').onclick=()=>{setTask(tData());$('tm').classList.remove('on');out('# تم تطبيق السؤال الجديد.\n','sys')};
+$('t8').onclick=()=>{$('t6').select();try{document.execCommand('copy')}catch(e){}$('t8').textContent='تم النسخ ✓';setTimeout(()=>$('t8').textContent='نسخ الرابط',2000)};
+$('tm').addEventListener('click',e=>{if(e.target===$('tm'))$('tm').classList.remove('on')});
+function fromHash(){const h=location.hash.slice(1);const d=h&&dec(h);setTask(d||DEF)}
+window.addEventListener('hashchange',fromHash);
+function tkey(){let h=5381;const s=task.title+'|'+task.desc;for(const c of s)h=((h<<5)+h+c.charCodeAt(0))|0;return Math.abs(h).toString(36)}
+function subMsg(t,bad){const s=$('subst');s.textContent=t;s.style.color=bad?'var(--er)':'var(--ac)';setTimeout(()=>{s.textContent=''},6000)}
+function drawMe(){$('pBtn').textContent=me?'👤 '+me.name+' — '+me.cls:'👤 سجّلي اسمك'}
+function loadMe(){try{const v=JSON.parse(localStorage.getItem('pylab_me')||'null');if(v&&v.name&&v.cls)me=v}catch(e){}drawMe();if(!me)$('pm').classList.add('on')}
+$('pBtn').onclick=()=>{if(me){$('pnm').value=me.name;$('pcl').value=me.cls}$('pm').classList.add('on')};
+$('psv').onclick=()=>{const n=$('pnm').value.trim();if(!n){$('pnm').focus();return}me={name:n.slice(0,60),cls:$('pcl').value};try{localStorage.setItem('pylab_me',JSON.stringify(me))}catch(e){}drawMe();$('pm').classList.remove('on')};
+async function submit(){
+  if(!me){$('pm').classList.add('on');return}
+  save();const same=lastRun&&lastRun.code===files[cur];
+  const e={title:task.title,code:(files[cur]||'').slice(0,20000),out:same?lastRun.out.slice(0,5000):'',ok:same?lastRun.ok:null,at:new Date().toISOString()};
+  if(fb){
+    try{const id=(me.cls+'_'+me.name+'_'+tkey()).replace(/[^A-Za-z0-9\u0600-\u06FF]+/g,'_').slice(0,140);
+      await fb.db.collection('submissions').doc(id).set({name:me.name,cls:me.cls,...e});subMsg('تم تسليم إجابتك للمعلمة ✅'+(same?'':' (لم تُشغَّل بعد)'))}
+    catch(x){subMsg('تعذر التسليم: '+(x&&x.message||x),true)}
+    return;
+  }
+  if(db&&uid){
+    try{const r=db.doc('submissions/'+uid);const d=await r.get();const o=d.exists?d.data():{};
+      await r.set({...o,name:me.name,cls:me.cls,['t_'+tkey()]:e});subMsg('تم تسليم إجابتك للمعلمة ✅'+(same?'':' (لم تُشغَّل بعد، شغّليها لتصل المخرجات)'))}
+    catch(x){subMsg('تعذر التسليم: '+(x&&x.message||x),true)}
+  }else{
+    const t=['الاسم: '+me.name,'الصف: '+me.cls,'السؤال: '+task.title,'','الكود:',e.code,'','المخرجات:',e.out].join('\n');
+    try{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove();subMsg('التسليم المباشر غير متاح هنا. نُسخت إجابتك، أرسليها للمعلمة.',true)}catch(x){subMsg('التسليم غير متاح هنا',true)}
+  }
+}
+$('sub').onclick=submit;
+function drawSubs(){const L=$('sl'),c=$('sf').value;L.innerHTML='';
+  const a=subs.filter(x=>!c||x.cls===c).sort((x,y)=>(y.at||'').localeCompare(x.at||''));
+  $('sc').textContent=a.length+' تسليم';
+  if(!a.length){L.textContent='لا توجد تسليمات بعد.';return}
+  a.forEach(x=>{const d=document.createElement('div');d.className='sub';const h=document.createElement('div');h.className='sh';
+    const t=x.ok===true?'✅ صحيح':x.ok===false?'❌ غير مطابق':'— لم يُتحقق';
+    h.textContent=x.name+' · '+x.cls+' · '+x.title+' · '+t+' · '+new Date(x.at).toLocaleString('ar');
+    const b=document.createElement('div');b.style.display='none';
+    const p1=document.createElement('pre');p1.textContent=x.code||'';
+    const p2=document.createElement('pre');p2.textContent='المخرجات:\n'+(x.out||'(لا توجد)');
+    b.append(p1,p2);h.onclick=()=>{b.style.display=b.style.display==='none'?'block':'none'};d.append(h,b);L.appendChild(d)})}
+function fbSubs(){
+  if(!fb.auth.currentUser){$('lm').classList.add('on');return}
+  const cl=TEACHERS[(fb.auth.currentUser.email||'').toLowerCase()]||[];
+  $('sm').classList.add('on');if(unsub)unsub();
+  if(!cl.length){$('sl').textContent='هذا الحساب غير مرتبط بأي صف.';return}
+  $('sf').innerHTML='<option value="">كل صفوفي</option>'+cl.map(c=>'<option>'+c+'</option>').join('');
+  unsub=fb.db.collection('submissions').where('cls','in',cl).limit(500).onSnapshot(s=>{subs=s.docs.map(d=>d.data());drawSubs()},()=>{$('sl').textContent='تعذر قراءة التسليمات. تأكدي من دخول المعلمة وقواعد Firestore.'})}
+$('lgo').onclick=async()=>{try{$('lerr').textContent='';await fb.auth.signInWithEmailAndPassword($('lem').value.trim(),$('lpw').value);$('lpw').value='';$('lm').classList.remove('on');fbSubs()}catch(x){$('lerr').textContent='تعذر الدخول: '+(x.code||x.message)}};
+$('lcl').onclick=()=>$('lm').classList.remove('on');
+$('sBtn').onclick=()=>{if(fb){fbSubs();return}$('sm').classList.add('on');if(unsub)unsub();
+  if(!db){$('sl').textContent='قاعدة البيانات غير متاحة.';return}
+  unsub=db.collection('submissions').onSnapshot(s=>{subs=[];s.docs.forEach(d=>{const v=d.data()||{};Object.keys(v).forEach(k=>{if(k.indexOf('t_')===0&&v[k])subs.push({...v[k],name:v.name,cls:v.cls})})});drawSubs()},()=>{$('sl').textContent='تعذر قراءة التسليمات.'})};
+$('sf').onchange=drawSubs;
+$('sx').onclick=()=>{$('sm').classList.remove('on');if(unsub){unsub();unsub=null}};
+async function initCloud(){try{if(!(window.claude&&claude.use))return;usr=await claude.use('user');db=await claude.use('db');
+  if(usr){uid=await usr.id();if(await usr.canEdit()){$('sBtn').style.display='';if(!me)$('pm').classList.remove('on')}}}catch(e){}}
+fromHash();init();loadMe();if(initFb()){$('sBtn').style.display='';$('sBtn').textContent='🔐 دخول المعلمة';}else initCloud();
+</script>
+</body>
+</html>
