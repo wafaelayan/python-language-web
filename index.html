@@ -1,362 +1,2348 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>بيئة بايثون للطالبات</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/pyodide@0.24.1/pyodide.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/firebase@10.14.1/firebase-app-compat.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/firebase@10.14.1/firebase-auth-compat.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/firebase@10.14.1/firebase-firestore-compat.js"></script>
-<style>
-:root{color-scheme:dark;--bg:#0b1220;--pn:#111a2e;--ln:#22304d;--tx:#e6edf7;--mu:#8ea0bd;--ac:#10b981;--am:#f59e0b;--er:#f87171;--ed:#0d1527;
-box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--tx);font-family:Cairo,sans-serif;font-size:15px}
-button{font-family:inherit;cursor:pointer;border:0;border-radius:10px;padding:7px 14px;font-weight:600;font-size:13px;background:#1c2a47;color:var(--tx)}
-button:hover{background:#26375c}
-.pri{background:var(--ac);color:#04251a}.pri:hover{background:#34d399}
-.am{background:#4f46e5}.am:hover{background:#6366f1}
-header{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--ln);background:var(--pn)}
-h1{font-size:18px;margin:0}
-#st{font-size:12px;color:var(--mu);display:flex;align-items:center;gap:6px}
-#dot{width:9px;height:9px;border-radius:50%;background:var(--am)}
-main{display:grid;grid-template-columns:310px 1fr;gap:12px;padding:12px;max-width:1400px;margin:auto}
-@media(max-width:860px){main{grid-template-columns:1fr}}
-.card{background:var(--pn);border:1px solid var(--ln);border-radius:14px;padding:14px}
-aside{display:flex;flex-direction:column;gap:12px}
-h2{font-size:14px;margin:0 0 8px;color:var(--ac)}
-#desc{white-space:pre-line;line-height:1.7;color:#cbd5e1;font-size:14px}
-.exp{margin-top:10px;background:var(--ed);border-radius:10px;padding:8px 10px;direction:ltr;text-align:left;font:13px 'Fira Code',monospace;color:#6ee7b7;white-space:pre-wrap}
-#fb{margin-top:10px;padding:9px 11px;border-radius:10px;font-size:13px;display:none}
-.ok{background:#064e3b;color:#a7f3d0}.no{background:#4c1d1d;color:#fecaca}
-.file{display:flex;justify-content:space-between;align-items:center;direction:ltr;padding:6px 10px;border-radius:8px;cursor:pointer;font:13px 'Fira Code',monospace;color:#cbd5e1}
-.file:hover{background:#1a2744}.file.on{background:#1e3a5f;color:#fff}
-.file b{color:var(--mu);font-weight:400;padding:0 4px}.file b:hover{color:var(--er)}
-#ac{position:absolute;display:none;width:360px;max-height:230px;overflow:auto;background:#16213a;border:1px solid #34476d;border-radius:10px;z-index:5;box-shadow:0 8px 24px #0008}
-.ai{padding:5px 10px;display:flex;flex-direction:column;gap:1px;cursor:pointer}.ai.on{background:#1e3a5f}
-.ai b{font:13px 'Fira Code',monospace;color:#6ee7b7}.ai i{font:12px 'Fira Code',monospace;color:var(--mu);font-style:normal}.ai span{direction:rtl;text-align:right;font-size:12px;color:#cbd5e1}
-.row{display:flex;gap:6px;margin-top:8px}
-input,textarea,select{font-family:inherit;background:var(--ed);color:var(--tx);border:1px solid var(--ln);border-radius:9px;padding:7px 10px;font-size:13px;width:100%}
-.center{display:flex;flex-direction:column;gap:12px;min-width:0}
-.bar{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
-.fname{direction:ltr;font:13px 'Fira Code',monospace;color:var(--am)}
-.ed{position:relative;display:flex;direction:ltr;background:var(--ed);border:1px solid var(--ln);border-radius:10px;height:320px;overflow:hidden}
-#gut,#code{font:14px/22px 'Fira Code',monospace;padding:10px 8px;margin:0}
-#gut{width:46px;text-align:right;color:#475a7d;overflow:hidden;user-select:none;border-right:1px solid var(--ln);white-space:pre}
-#code{flex:1;border:0;border-radius:0;background:transparent;resize:none;white-space:pre;overflow:auto;outline:0;tab-size:4;text-align:left;direction:ltr}
-#term{direction:ltr;text-align:left;font:13px/1.55 'Fira Code',monospace;height:250px;overflow:auto;background:#070d19;border:1px solid var(--ln);border-radius:10px;padding:10px;white-space:pre-wrap;word-break:break-all}
-.err{color:var(--er)}.sys{color:var(--mu)}.inp{color:var(--am)}.pr{color:#7dd3fc}
-.tin{background:transparent;border:0;border-bottom:1px solid var(--am);border-radius:0;color:var(--am);font:13px 'Fira Code',monospace;padding:0 2px;width:60%;outline:0;direction:ltr}
-.repl{display:flex;direction:ltr;align-items:center;gap:8px;margin-top:8px;font:13px 'Fira Code',monospace}
-.repl input{font:13px 'Fira Code',monospace;direction:ltr}
-.modal{position:fixed;inset:0;background:#000a;display:none;align-items:center;justify-content:center;padding:16px;z-index:50}
-.modal.on{display:flex}
-.box{background:var(--pn);border:1px solid var(--ln);border-radius:16px;padding:18px;max-width:560px;width:100%;max-height:90vh;overflow:auto;display:flex;flex-direction:column;gap:8px}
-label{font-size:12px;color:var(--mu)}
-.sub{border:1px solid var(--ln);border-radius:10px;margin-top:8px;overflow:hidden}.sh{padding:8px 10px;cursor:pointer;background:#16213a;font-size:13px}
-.sub pre{direction:ltr;text-align:left;margin:0;padding:8px 10px;font:12px/1.5 'Fira Code',monospace;white-space:pre-wrap;background:var(--ed)}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>PyCharm الكويت - مختبر بايثون التعليمي</title>
+  
+  <!-- خط تجوال وخطوط الكود الاحترافية -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=JetBrains+Mono:wght@400;600&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Pyodide Python Engine -->
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js"></script>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    body {
+      font-family: 'Tajawal', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #1e1f22;
+      color: #bcbec4;
+      touch-action: manipulation;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+    }
+    .code-font {
+      font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+    }
+    /* PyCharm Darcula Theme Colors */
+    .pc-bg-dark { background-color: #1e1f22; }
+    .pc-bg-panel { background-color: #2b2d30; }
+    .pc-bg-subtle { background-color: #26282b; }
+    .pc-border { border-color: #393b40; }
+    .pc-tab-active { 
+      background-color: #1e1f22; 
+      color: #dfe1e5; 
+      border-bottom: 2px solid #3574f0; 
+    }
+    
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #1e1f22;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #43454a;
+      border-radius: 3px;
+    }
+    .editor-line-height {
+      line-height: 1.5rem;
+    }
+  </style>
 </head>
-<body>
-<header>
-  <div><h1>🐍 بيئة بايثون للطالبات</h1><div id="st"><span id="dot"></span><span id="stt">جارٍ تجهيز بايثون…</span></div></div>
-  <div style="display:flex;gap:8px;flex-wrap:wrap"><button id="pBtn">👤 سجّلي اسمك</button><button class="pri" id="sBtn" style="display:none">📥 التسليمات</button><button class="am" id="tBtn">لوحة المعلمة</button></div>
-</header>
-<main>
-<aside>
-  <div class="card">
-    <h2 id="tt">المهمة</h2><div id="desc"></div>
-    <div class="exp" id="exp"></div>
-    <div class="row"><button class="pri" id="chk" style="flex:1">تحقق من حلي</button><button id="rst" style="flex:1">استعادة القالب</button></div>
-    <div id="fb"></div>
-  </div>
-  <div class="card">
-    <h2>الملفات</h2><div id="files"></div>
-    <div class="row"><input id="nf" placeholder="اسم ملف جديد: data.txt" dir="ltr"><button id="addf">+</button></div>
-  </div>
-</aside>
-<section class="center">
-  <div class="card">
-    <div class="bar"><span class="fname" id="fn">main.py</span>
-      <div style="display:flex;gap:6px"><span id="subst" style="font-size:12px;color:var(--mu);align-self:center"></span><button class="am" id="sub">📤 تسليم للمعلمة</button><button id="stop" style="display:none">⏹ إيقاف</button><button class="pri" id="run">▶ تشغيل (Ctrl+Enter)</button></div></div>
-    <div class="ed"><pre id="gut">1</pre><textarea id="code" spellcheck="false" autocapitalize="off" autocomplete="off"></textarea><div id="ac"></div></div>
-  </div>
-  <div class="card">
-    <div class="bar"><h2 style="margin:0">الطرفية</h2><button id="clr">مسح</button></div>
-    <div id="term"></div>
-    <div class="repl"><span class="pr" id="ps">&gt;&gt;&gt;</span><input id="rin" placeholder="جرّبي أمرًا مباشرًا مثل: 2 + 3" autocomplete="off"></div>
-  </div>
-</section>
-</main>
+<body class="flex flex-col h-screen select-none text-xs sm:text-sm">
 
-<div class="modal" id="tm"><div class="box">
-  <h2>لوحة المعلمة: إنشاء سؤال</h2>
-  <label>عنوان السؤال</label><input id="t1">
-  <label>المستوى</label><select id="t2"><option>مبتدئ</option><option>متوسط</option><option>متقدم</option></select>
-  <label>نص السؤال</label><textarea id="t3" rows="4"></textarea>
-  <label>كود البداية</label><textarea id="t4" rows="4" dir="ltr" style="font-family:'Fira Code',monospace"></textarea>
-  <label>المخرجات المتوقعة (للتحقق التلقائي)</label><textarea id="t5" rows="2" dir="ltr"></textarea>
-  <label>رابط السؤال للطالبات</label><input id="t6" readonly dir="ltr">
-  <div class="row"><button class="pri" id="t7" style="flex:1">تطبيق الآن</button><button id="t8" style="flex:1">نسخ الرابط</button><button id="t9">إغلاق</button></div>
-</div></div>
+  <!-- ================= 1. شريط العنوان العلوي (Header) ================= -->
+  <header class="pc-bg-panel border-b pc-border px-3 py-1 flex items-center justify-between shrink-0 min-h-[46px]" dir="ltr">
+    <div class="flex items-center gap-2.5">
+      <!-- شعار المدرسة المعتمد SVG والشعار النصي -->
+      <div id="schoolBranding" class="flex items-center gap-2 bg-[#1e1f22] px-2.5 py-1 rounded-lg border pc-border shadow-sm">
+        <svg class="w-7 h-7 shrink-0" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- الأقواس الذهبية العلوية -->
+          <path d="M10 58 A 42 42 0 0 1 90 58" stroke="#f59e0b" stroke-width="7" stroke-linecap="round"/>
+          <path d="M22 58 A 30 30 0 0 1 78 58" stroke="#fbbf24" stroke-width="4" stroke-opacity="0.8" stroke-linecap="round"/>
+          <!-- الكتاب المفتوح في الأسفل -->
+          <path d="M50 78 C 38 72 20 72 12 76 L 15 85 C 25 80 40 80 50 86 C 60 80 75 80 85 85 L 88 76 C 80 72 62 72 50 78 Z" fill="#0f3460"/>
+          <path d="M50 72 C 38 66 22 66 14 70 L 16 75 C 24 71 38 71 50 76 C 62 71 76 71 84 75 L 86 70 C 78 66 62 66 50 72 Z" fill="#16213e"/>
+          <!-- القلم والشعلة بعلم الكويت -->
+          <path d="M48 20 Q 50 14 52 20 Q 55 10 50 4 Q 45 10 48 20 Z" fill="#22c55e"/>
+          <path d="M47 16 Q 50 12 53 16 Q 52 10 50 6 Q 48 10 47 16 Z" fill="#ef4444"/>
+          <!-- جسم القلم المخطط -->
+          <rect x="46" y="24" width="8" height="24" rx="2" fill="#0f3460"/>
+          <path d="M46 28 L 54 32 M 46 36 L 54 40" stroke="#ffffff" stroke-width="1.8"/>
+          <!-- رأس الريشة المعدني -->
+          <path d="M46 48 L 50 68 L 54 48 Z" fill="#d1d5db"/>
+          <circle cx="50" cy="56" r="1.5" fill="#111827"/>
+          <line x1="50" y1="56" x2="50" y2="68" stroke="#111827" stroke-width="1"/>
+        </svg>
 
-<div class="modal" id="pm"><div class="box">
-  <h2>بيانات الطالبة</h2>
-  <label>الاسم</label><input id="pnm" maxlength="60" placeholder="اكتبي اسمك الكامل">
-  <label>الصف</label><select id="pcl"><option>عاشر 1</option><option>عاشر 2</option><option>عاشر 3</option><option>عاشر 4</option><option>عاشر 5</option></select>
-  <div class="row"><button class="pri" id="psv" style="flex:1">ابدئي</button></div>
-</div></div>
-<div class="modal" id="sm"><div class="box" style="max-width:760px">
-  <h2>تسليمات الطالبات</h2>
-  <div class="row"><select id="sf"><option value="">كل الصفوف</option><option>عاشر 1</option><option>عاشر 2</option><option>عاشر 3</option><option>عاشر 4</option><option>عاشر 5</option></select><span id="sc" style="align-self:center;white-space:nowrap;font-size:13px"></span><button id="sx">إغلاق</button></div>
-  <div id="sl"></div>
-</div></div>
-<div class="modal" id="lm"><div class="box">
-  <h2>دخول المعلمة</h2>
-  <label>البريد الإلكتروني</label><input id="lem" type="email" dir="ltr">
-  <label>كلمة المرور</label><input id="lpw" type="password" dir="ltr">
-  <div id="lerr" style="color:var(--er);font-size:12px"></div>
-  <div class="row"><button class="pri" id="lgo" style="flex:1">دخول</button><button id="lcl">إغلاق</button></div>
-</div></div>
-<script>
-const $=id=>document.getElementById(id);
-// ضعي هنا إعدادات مشروع Firebase من Project settings ثم Your apps ثم Config. مثال: {apiKey:"...",authDomain:"...",projectId:"...",appId:"..."}
-const FIREBASE_CONFIG={apiKey:"AIzaSyA1YQbYlMfshxvL7qNlGEQ6uAVK10jJ6Ag",authDomain:"python-answers.firebaseapp.com",projectId:"python-answers",storageBucket:"python-answers.firebasestorage.app",messagingSenderId:"3335708296",appId:"1:3335708296:web:245c441fe41bfeab6b893d"};
-// المعلمات وصفوفهن: أضيفي سطرًا لكل معلمة بنفس البريد المكتوب في قواعد Firestore
-const TEACHERS={'engwafa.allyan@gmail.com':['عاشر 1','عاشر 2','عاشر 3','عاشر 4','عاشر 5']};
-let fb=null;
-function initFb(){try{if(FIREBASE_CONFIG&&window.firebase){firebase.initializeApp(FIREBASE_CONFIG);fb={db:firebase.firestore(),auth:firebase.auth()};return true}}catch(e){}return false}
-const DEF={title:'ترحيب بايثون',difficulty:'مبتدئ',desc:'اكتبي برنامجًا يطبع الجملة التالية:\nHello, Python!\n\nتلميح: استخدمي الدالة print وتأكدي من علامات التنصيص.',starterCode:'# اكتبي الكود هنا\n',expectedOutput:'Hello, Python!'};
-let pyErr=null,py=null,files={},cur='main.py',cap=[],task=DEF,more=false,hist=[],hi=0,sess=null,lastRun=null,me=null,db=null,usr=null,uid=null,unsub=null,subs=[];
-const PYSETUP=`
-import code,sys,traceback,linecache,builtins,random
-class NeedInput(BaseException): pass
-class Stdin:
-    def __init__(s,e): s.e=e
-    def readline(s): return s.e._input()+'\\n'
-class Con(code.InteractiveConsole):
-    def runcode(s,c):
-        try: exec(c,s.locals)
-        except SystemExit: pass
-        except NeedInput: raise
-        except: s.showtraceback()
-class Env:
-    def __init__(s):
-        s.ans=[]; s.i=0; s.reset(); builtins.input=s._input; sys.stdin=Stdin(s)
-    def reset(s):
-        s.ns={'__name__':'__main__'}; s.con=Con(s.ns)
-    def setin(s,a): s.ans=list(a); s.i=0
-    def _input(s,prompt=''):
-        o=sys.stdout; o.write(str(prompt)); o.flush()
-        if s.i<len(s.ans):
-            a=s.ans[s.i]; s.i+=1; o.write(a+'\\n'); o.flush(); return a
-        raise NeedInput()
-    def run(s,src,fn,a,seed):
-        s.reset(); s.setin(a); random.seed(seed)
-        linecache.cache[fn]=(len(src),None,src.splitlines(True),fn)
-        try: exec(compile(src,fn,'exec'),s.ns)
-        except SystemExit: pass
-        except NeedInput: return 2
-        except BaseException:
-            t,e,tb=sys.exc_info(); traceback.print_exception(t,e,tb.tb_next)
-        sys.stdout.flush(); return 0
-    def push(s,l,a):
-        pre=list(s.con.buffer); s.setin(a)
-        try: r=int(s.con.push(l))
-        except NeedInput:
-            s.con.buffer=pre; return 2
-        sys.stdout.flush(); return r
-env=Env()
+        <div class="flex flex-col text-right leading-tight" dir="rtl">
+          <span class="text-[11px] font-extrabold text-white tracking-tight">مدرسة موضي سلطان العيسى الثانوية بنات</span>
+          <span class="text-[9.5px] text-amber-400 font-bold">إعداد وتصميم: أ. وفاء عليان</span>
+        </div>
+      </div>
+
+      <span class="text-slate-600 hidden lg:inline">|</span>
+
+      <!-- زر لوحة المعلمة السريع -->
+      <div id="secretLogoTrigger" class="cursor-pointer bg-black/40 hover:bg-[#3574f0]/20 px-2 py-1 rounded border pc-border hover:border-[#3574f0] transition flex items-center gap-1.5" title="لوحة المعلمة">
+        <span class="text-[10px] font-black text-[#21d789] bg-black px-1 rounded">PC</span>
+        <span class="text-[11px] text-slate-300 font-bold hidden sm:inline">لوحة المعلمة 🔒</span>
+      </div>
+    </div>
+
+    <!-- أزرار الإجراءات السريعة في الرأس -->
+    <div class="flex items-center gap-1.5" dir="rtl">
+      <button id="openWorksheetsBtn" class="px-2.5 py-1 rounded bg-[#3574f0] hover:bg-[#2b61cd] text-white font-bold text-xs flex items-center gap-1 shadow transition">
+        <span>📖</span>
+        <span>أوراق العمل</span>
+      </button>
+      <button id="openAssessmentHeaderBtn" class="px-2.5 py-1 rounded bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs flex items-center gap-1 shadow transition">
+        <span>📝</span>
+        <span>تقويم</span>
+      </button>
+      <button id="openProjectHeaderBtn" class="px-2.5 py-1 rounded bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs flex items-center gap-1 shadow transition">
+        <span>🚀</span>
+        <span>مشروع</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ================= 2. شريط تحكم التشغيل وبيانات الطالبة (Action Toolbar) ================= -->
+  <div class="pc-bg-subtle border-b pc-border px-3 py-1.5 flex flex-wrap items-center justify-between gap-2 shrink-0" dir="ltr">
+    
+    <!-- أدوات التشغيل والتنزيل وإعادة الضبط -->
+    <div class="flex items-center gap-1.5 flex-wrap">
+      
+      <!-- زر التشغيل Run -->
+      <button id="runPythonBtn" class="flex items-center gap-1.5 px-3 py-1 rounded bg-[#2da44e] hover:bg-[#2c974b] active:bg-[#268442] text-white font-bold text-xs shadow transition cursor-pointer">
+        <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 16 16">
+          <path d="M4 2v12l10-6z"/>
+        </svg>
+        <span>Run ▶</span>
+      </button>
+
+      <!-- زر إنشاء ملف جديد -->
+      <button id="newFileBtn" class="flex items-center gap-1 px-2.5 py-1 rounded bg-[#1e1f22] hover:bg-[#393b40] text-sky-400 border border-sky-600/40 text-xs font-semibold transition" title="إنشاء ملف بايثون جديد">
+        <span>📄</span>
+        <span>جديد</span>
+      </button>
+
+      <!-- زر تنزيل ملف الحل .py -->
+      <button id="downloadCodeBtn" class="flex items-center gap-1 px-2.5 py-1 rounded bg-[#1e1f22] hover:bg-[#393b40] text-emerald-400 border border-emerald-600/40 text-xs font-semibold transition" title="تنزيل الكود كملف بايثون .py">
+        <span>💾</span>
+        <span>تنزيل .py</span>
+      </button>
+
+      <!-- زر إعادة الضبط -->
+      <button id="resetCodeBtn" class="px-2 py-1 rounded bg-[#1e1f22] hover:bg-[#393b40] border pc-border text-slate-300 text-xs transition" title="إعادة الكود الأصلي للنشاط">
+        <span>↺</span>
+      </button>
+
+      <!-- زر إرسال التدريب السحابي للمعلمة -->
+      <button id="submitAnswerBtn" class="hidden items-center gap-1 px-3 py-1 rounded bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow transition" dir="rtl">
+        <span>💌</span>
+        <span>إرسال التدريب</span>
+      </button>
+
+      <span class="text-slate-500 hidden sm:inline">|</span>
+      <span id="currentFileDropdownName" class="font-mono text-slate-300 text-xs hidden sm:inline">School_Trip.py</span>
+    </div>
+
+    <!-- بطاقة عرض اسم الطالبة والفصل الحالي -->
+    <div class="flex items-center gap-2 flex-wrap" dir="rtl">
+      <div class="flex items-center gap-2 bg-[#1e1f22] border border-[#3574f0]/50 px-2.5 py-1 rounded-md shadow-sm">
+        <span class="text-[#3574f0]">🎓</span>
+        <span class="text-slate-400 text-[11px]">الطالبة:</span>
+        <span id="headerStudentName" class="text-white font-bold text-xs truncate max-w-[150px] sm:max-w-[200px]">لم يتم الدخول</span>
+        <span class="text-slate-500">|</span>
+        <span class="text-slate-400 text-[11px]">الصف:</span>
+        <span id="headerStudentClass" class="text-amber-400 font-bold text-xs">--</span>
+        <button id="changeStudentBtn" class="text-slate-400 hover:text-white text-[11px] px-1 hover:underline mr-1" title="تغيير الطالبة">
+          ✏️
+        </button>
+        <button id="logoutBtn" class="text-rose-400 hover:text-rose-300 text-[11px] px-1 hover:underline mr-1 font-bold flex items-center gap-0.5" title="تسجيل الخروج">
+          <span>🚪</span>
+          <span>خروج</span>
+        </button>
+      </div>
+
+      <!-- عناصر مخفية للاستخدام البرمجي الداخلي -->
+      <input type="hidden" id="studentNameInput">
+      <input type="hidden" id="studentClassSelect">
+    </div>
+
+  </div>
+
+  <!-- ================= 3. مساحة العمل المركزية (Workspace) ================= -->
+  <div class="flex-1 flex overflow-hidden min-h-0 relative">
+    
+    <!-- نافذة شجرة المشروع (للشاشات المتوسطة والكبيرة) -->
+    <aside id="projectSidebar" class="hidden md:flex w-52 pc-bg-panel border-r pc-border flex-col shrink-0 text-xs" dir="ltr">
+      <div class="px-3 py-1.5 border-b pc-border font-bold text-slate-300 flex items-center justify-between">
+        <span>Project Files</span>
+        <button id="sidebarNewFileBtn" class="text-sky-400 hover:text-white text-xs px-1" title="ملف جديد">+</button>
+      </div>
+      <div class="p-2 overflow-y-auto flex-1 font-mono space-y-1" id="projectFilesList">
+        <!-- Files populated dynamically -->
+      </div>
+    </aside>
+
+    <!-- منطقة المحرر والكونسول -->
+    <main class="flex-1 flex flex-col overflow-hidden min-h-0 pc-bg-dark">
+      
+      <!-- شريط معلومات النشاط الحالي -->
+      <div class="pc-bg-subtle border-b pc-border px-3 py-1 flex items-center justify-between text-xs" dir="rtl">
+        <div class="flex items-center gap-2 truncate">
+          <span id="taskTypeBadge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#3574f0]/20 text-[#3574f0] border border-[#3574f0]/40 shrink-0">
+            كتاب الوزارة
+          </span>
+          <span id="taskTitle" class="font-bold text-white truncate">ورقة عمل (6) - صفحة 69</span>
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+          <span id="taskPageBadge" class="text-[11px] text-amber-400 font-mono font-bold">صـ 69</span>
+          <button id="viewInstructionsMobileBtn" class="text-xs text-[#3574f0] hover:underline">
+            المطلوب ▾
+          </button>
+        </div>
+      </div>
+
+      <!-- نافذة تفاصيل السؤال القابلة للطي -->
+      <div id="mobileInstructionsSheet" class="hidden bg-[#161719] border-b pc-border p-3 text-right max-h-36 overflow-y-auto" dir="rtl">
+        <div class="text-xs text-slate-300 leading-relaxed space-y-1" id="taskDescription"></div>
+      </div>
+
+      <!-- علامة تبويب الملف المفتوح -->
+      <div class="flex items-center border-b pc-border pc-bg-panel px-2 pt-1 gap-1 select-none shrink-0 overflow-x-auto" dir="ltr" id="editorTabsContainer">
+        <div id="activeEditorTab" class="flex items-center gap-2 px-3 py-1 rounded-t pc-tab-active font-mono text-xs font-semibold border-t border-l border-r pc-border cursor-pointer">
+          <span class="text-[#3574f0]">🐍</span>
+          <span id="tabFilename">Welcome.py</span>
+        </div>
+
+        <!-- تبويب التقويم المرسل من المعلمة -->
+        <div id="assessmentTab" class="hidden items-center gap-1.5 px-3 py-1 rounded-t font-mono text-xs font-bold border-t border-l border-r pc-border cursor-pointer transition bg-[#1e1f22]/70 text-amber-400 hover:text-amber-300 hover:bg-[#1e1f22]">
+          <span>📝</span>
+          <span id="assessmentTabTitle">تقويم</span>
+          <span id="assessmentNewBadge" class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+        </div>
+
+        <!-- تبويب المشروع المرسل من المعلمة -->
+        <div id="projectTab" class="hidden items-center gap-1.5 px-3 py-1 rounded-t font-mono text-xs font-bold border-t border-l border-r pc-border cursor-pointer transition bg-[#1e1f22]/70 text-purple-400 hover:text-purple-300 hover:bg-[#1e1f22]">
+          <span>🚀</span>
+          <span id="projectTabTitle">مشروع</span>
+          <span id="projectNewBadge" class="w-2 h-2 rounded-full bg-purple-400 animate-ping"></span>
+        </div>
+      </div>
+
+      <!-- مساحة كتابة الكود وأرقام الأسطر -->
+      <div class="relative flex-1 flex pc-bg-dark code-font overflow-hidden min-h-0" dir="ltr">
+        <div id="lineNumbers" class="w-8 py-2 bg-[#1e1f22] text-[#4b5059] text-right pr-2 select-none code-font text-xs sm:text-sm editor-line-height border-r pc-border shrink-0">
+          1
+        </div>
+        <textarea id="codeTextarea" spellcheck="false" autocapitalize="none" autocomplete="off" autocorrect="off" class="flex-1 py-2 px-3 bg-[#1e1f22] text-[#dfe1e5] code-font text-xs sm:text-sm editor-line-height resize-none focus:outline-none overflow-y-auto whitespace-pre placeholder-[#4b5059] selection:bg-[#214283]" placeholder="# اكتب كود بايثون هنا..."></textarea>
+      </div>
+
+      <!-- ================= 4. نافذة التشغيل السفلية (Terminal) ================= -->
+      <section id="consoleToolWindow" class="h-44 sm:h-48 pc-bg-panel border-t pc-border flex flex-col shrink-0" dir="ltr">
+        
+        <!-- رأس نافذة التشغيل -->
+        <div class="px-3 py-1 border-b pc-border flex items-center justify-between text-xs pc-bg-panel text-[#bcbec4] shrink-0">
+          <div class="flex items-center gap-2">
+            <span class="flex items-center gap-1 font-bold text-white border-b-2 border-[#3574f0] pb-0.5">
+              <span>▶</span>
+              <span id="runTabTitle">Run Terminal</span>
+            </span>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <span id="pyodideStatusBadge" class="text-[10px] sm:text-[11px] font-bold text-amber-400 flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+              <span>Python Loading...</span>
+            </span>
+            <button id="clearTerminalBtn" class="text-slate-400 hover:text-white px-1.5 py-0.5 rounded" title="مسح المخرجات">
+              🗑️
+            </button>
+          </div>
+        </div>
+
+        <!-- شاشة الكونسول المكتوبة بالخط المطابق لـ PyCharm -->
+        <div class="flex-1 p-2 sm:p-2.5 code-font text-xs sm:text-sm text-[#bcbec4] overflow-y-auto whitespace-pre-wrap leading-relaxed select-text font-mono flex flex-col cursor-text pc-bg-dark" id="consoleContainer">
+          <div id="terminalOutput">C:\Users\Student\AppData\Local\Programs\Python\Python311\python.exe main.py</div>
+          
+          <!-- سطر الإدخال المباشر لـ input() داخل الـ Terminal -->
+          <div id="inlineInputRow" class="hidden items-center text-emerald-400 font-mono mt-1 flex-wrap gap-1 pc-bg-subtle p-1.5 rounded border border-emerald-500/40">
+            <span id="inlinePromptText" class="text-white select-none whitespace-pre text-xs"></span>
+            <div class="flex-1 flex items-center min-w-[140px]">
+              <input type="text" id="inlineConsoleInput" autocomplete="off" spellcheck="false" placeholder="اكتبي القيمة واضغطي Enter..." class="flex-1 bg-[#1e1f22] text-emerald-300 font-mono text-xs sm:text-sm focus:outline-none border border-emerald-500 px-2 py-0.5 rounded">
+              <button type="button" id="inlineSubmitBtn" class="ml-1 px-2.5 py-0.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded shrink-0">
+                ↵
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- ================= 5. شريط الحالة السفلي (Status Bar) ================= -->
+  <footer class="pc-bg-panel border-t pc-border px-3 py-0.5 flex items-center justify-between text-[11px] text-slate-400 font-mono shrink-0 h-6" dir="ltr">
+    <div class="flex items-center gap-3">
+      <span class="text-[#3574f0] font-bold">PyCharm</span>
+      <span id="caretPosition">Line: 1, Col: 1</span>
+    </div>
+    <div class="flex items-center gap-3">
+      <span>UTF-8</span>
+      <span>Python 3.11</span>
+      <span class="text-emerald-400">●</span>
+    </div>
+  </footer>
+
+  <!-- ================= 6. القائمة الجانبية المنبثقة لاختيار الأنشطة (Drawer) ================= -->
+  <div id="sidebarDrawer" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex justify-end hidden">
+    <div class="w-full max-w-md pc-bg-panel h-full border-l pc-border flex flex-col p-4 shadow-2xl" dir="rtl">
+      
+      <div class="flex items-center justify-between pb-3 border-b pc-border">
+        <h2 class="text-sm font-bold text-white flex items-center gap-2">
+          <span>📑</span>
+          <span>فهرس أوراق العمل وتدريبات المنهج</span>
+        </h2>
+        <button id="closeSidebarBtn" class="text-slate-400 hover:text-white text-base font-bold px-2 py-0.5 rounded hover:bg-[#393b40] transition" title="إغلاق">✕</button>
+      </div>
+
+      <!-- تبويبات الفهرس: أوراق العمل vs التقويم vs المشروع -->
+      <div class="flex border-b pc-border mt-3 text-xs">
+        <button id="tabBtnWorksheets" class="flex-1 py-2 font-bold text-[#3574f0] border-b-2 border-[#3574f0]">
+          📖 أوراق العمل
+        </button>
+        <button id="tabBtnAssessment" class="flex-1 py-2 font-bold text-slate-400 hover:text-white">
+          📝 تقويم
+        </button>
+        <button id="tabBtnProject" class="flex-1 py-2 font-bold text-slate-400 hover:text-white">
+          🚀 مشروع
+        </button>
+      </div>
+
+      <!-- قائمة العناصر -->
+      <div id="drawerListContainer" class="flex-1 overflow-y-auto py-3 space-y-2 text-xs">
+        <!-- Injected dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 7. نافذة لوحة المعلمة السحابية (Modal) ================= -->
+  <div id="teacherModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-3 sm:p-5 hidden">
+    <div class="w-full max-w-4xl pc-bg-panel border pc-border rounded-xl shadow-2xl flex flex-col max-h-[92vh] overflow-hidden" dir="rtl">
+      
+      <!-- رأس نافذة المعلمة -->
+      <div class="p-3 sm:p-4 border-b pc-border flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="text-base sm:text-lg">🔒</span>
+          <div>
+            <h3 class="font-bold text-white text-xs sm:text-sm" id="modalTeacherName">لوحة المعلمة: أ. وفاء عليان</h3>
+            <p class="text-[10px] sm:text-xs text-slate-400">متابعة الحلول السحابية وتصدير الدرجات</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="teacherLogoutBtn" class="px-2.5 py-1 bg-rose-600/20 hover:bg-rose-600/40 text-rose-300 border border-rose-500/30 rounded text-xs font-bold transition flex items-center gap-1">
+            <span>🚪</span>
+            <span>تسجيل خروج</span>
+          </button>
+          <button id="closeTeacherModalBtn" class="text-slate-400 hover:text-white text-lg font-bold px-2">✕</button>
+        </div>
+      </div>
+
+      <!-- شاشة إدخال رمز PIN -->
+      <div id="pinEntryView" class="p-6 flex flex-col items-center justify-center space-y-3">
+        <p class="text-xs text-slate-300">أدخلي رمز المرور الخاص بحساب المعلمة:</p>
+        <div class="flex gap-2">
+          <input type="password" id="teacherPinInput" maxlength="6" placeholder="رمز PIN" class="bg-[#1e1f22] border pc-border px-3 py-1.5 rounded text-center text-white font-mono text-sm tracking-widest focus:outline-none focus:border-[#3574f0] w-32">
+          <button id="verifyPinBtn" class="px-4 py-1.5 bg-[#3574f0] hover:bg-[#2b61cd] text-white font-bold text-xs rounded transition">
+            دخول
+          </button>
+        </div>
+        <p id="pinErrorMsg" class="text-[11px] text-rose-400 hidden">رمز المرور غير صحيح!</p>
+      </div>
+
+      <!-- لوحة التحكم الكاملة بعد إدخال الرمز -->
+      <div id="teacherDashboardView" class="hidden flex-1 flex flex-col overflow-hidden p-3 sm:p-4">
+        
+        <!-- شريط أدوات المعلمة -->
+        <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b pc-border">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="text-xs text-slate-300">تصفية حسب الفصل:</span>
+            <select id="filterClassSelect" class="bg-[#1e1f22] border pc-border px-2 py-1 rounded text-white text-xs">
+              <option value="all">جميع الفصول</option>
+            </select>
+            <button id="refreshDataBtn" class="px-2.5 py-1 bg-[#1e1f22] hover:bg-[#393b40] border pc-border rounded text-xs text-slate-200">
+              🔄 تحديث
+            </button>
+            <button id="toggleTeacherUploadFormBtn" class="px-2.5 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded text-xs font-bold shadow flex items-center gap-1">
+              <span>📤</span>
+              <span>نشر نشاط (تقويم أو مشروع)</span>
+            </button>
+            <button id="toggleWorksheetsControlBtn" class="px-2.5 py-1 bg-sky-700 hover:bg-sky-600 text-white rounded text-xs font-bold shadow flex items-center gap-1">
+              <span>⚙️</span>
+              <span>التحكم في ظهور أوراق العمل</span>
+            </button>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button id="copyTeacherLinkBtn" class="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded text-xs font-bold shadow">
+              📋 نسخ رابط طالباتي
+            </button>
+            <button id="exportExcelBtn" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-xs font-bold shadow">
+              📊 تصدير Excel
+            </button>
+          </div>
+        </div>
+
+        <!-- صندوق تحكم المعلمة في ظهور/إخفاء أوراق العمل -->
+        <div id="worksheetsControlPanel" class="hidden bg-[#161719] border border-sky-600/40 p-3 rounded-lg my-2 text-xs flex flex-col gap-2">
+          <div class="flex items-center justify-between border-b pc-border pb-1.5 font-bold text-sky-400">
+            <div class="flex items-center gap-1.5">
+              <span>⚙️</span>
+              <span>التحكم بأوراق العمل الظاهرة للطالبات (تفعيل / إخفاء)</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button id="enableAllWorksheetsBtn" class="text-[10px] bg-[#2b2d30] hover:bg-[#393b40] text-emerald-400 px-2 py-0.5 rounded border pc-border">تفعيل الكل</button>
+              <button id="disableAllWorksheetsBtn" class="text-[10px] bg-[#2b2d30] hover:bg-[#393b40] text-rose-400 px-2 py-0.5 rounded border pc-border">إخفاء الكل</button>
+              <button id="closeWorksheetsControlBtn" class="text-slate-400 hover:text-white px-1">✕</button>
+            </div>
+          </div>
+          <p class="text-[11px] text-slate-400">قومي بتعطيل أو تفعيل أي ورقة عمل للتحكم فيما تشاهده الطالبات في قائمة "أوراق العمل":</p>
+          <div id="worksheetsTogglesContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 max-h-48 overflow-y-auto p-1">
+            <!-- التبديلات تملأ ديناميكياً -->
+          </div>
+        </div>
+
+        <!-- نموذج إرسال نشاط جديد من المعلمة للطالبات -->
+        <div id="teacherUploadForm" class="hidden bg-[#1e1f22] border pc-border p-3 rounded-lg my-2 text-xs flex flex-col gap-2.5">
+          <div class="flex items-center justify-between border-b pc-border pb-1.5 font-bold text-amber-400">
+            <span>📝 نشر نشاط جديد لطالباتي</span>
+            <button id="closeTeacherUploadFormBtn" class="text-slate-400 hover:text-white">✕</button>
+          </div>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label class="block text-slate-400 text-[11px] mb-1 font-semibold">نوع النشاط:</label>
+              <select id="teacherActivityTypeSelect" class="w-full bg-[#26282b] border pc-border px-3 py-2 rounded-lg text-amber-300 font-bold focus:outline-none">
+                <option value="assessment">📝 تقويم مطلوب</option>
+                <option value="project">🚀 مشروع وحدة</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-slate-400 text-[11px] mb-1 font-semibold">تحديد الفصل المستهدف:</label>
+              <select id="teacherTargetClassSelect" class="w-full bg-[#26282b] border pc-border px-3 py-2 rounded-lg text-emerald-400 font-bold focus:outline-none">
+                <option value="all">جميع الفصول</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-slate-400 text-[11px] mb-1 font-semibold">عنوان النشاط:</label>
+              <input type="text" id="teacherTaskTitleInput" placeholder="مثال: التقويم الأول / مشروع الفصل" class="w-full bg-[#26282b] border pc-border px-3 py-2 rounded-lg text-white font-bold focus:outline-none focus:border-[#3574f0]">
+            </div>
+          </div>
+
+          <!-- منطقة رفع ملفات البايثون فقط -->
+          <div class="mt-1">
+            <label class="block text-slate-400 text-[11px] mb-1 font-semibold">رفع ملف الكود البرمجي (.py):</label>
+            <div class="border-2 border-dashed border-[#393b40] hover:border-amber-500 rounded-xl p-4 flex flex-col items-center justify-center gap-2 bg-[#26282b]/50 cursor-pointer transition" onclick="document.getElementById('teacherPyFileInput').click()">
+              <span class="text-2xl">📁</span>
+              <span class="text-white font-bold text-xs">اضغطي هنا لاختيار ملف أو ملفات بايثون (.py)</span>
+              <span class="text-slate-400 text-[11px]">(سيتم فتح الكود والأسئلة المكتوبة داخله للطالبات مباشرة)</span>
+              <input type="file" id="teacherPyFileInput" accept=".py,.txt" multiple class="hidden">
+            </div>
+            <div id="teacherUploadedFilesTags" class="flex flex-wrap gap-1.5 mt-2 hidden"></div>
+          </div>
+
+          <div class="flex justify-end gap-2 pt-1">
+            <button id="sendAssessmentToStudentsBtn" class="px-5 py-2 bg-amber-600 hover:bg-amber-500 active:scale-[0.99] text-white font-bold rounded-lg text-xs shadow flex items-center gap-1.5 transition">
+              <span>🚀</span>
+              <span>نشر وإرسال لطالباتي</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- جدول الحلول السحابية المباشرة -->
+        <div class="flex-1 overflow-y-auto mt-3 border pc-border rounded bg-[#1e1f22]">
+          <table class="w-full text-right text-xs">
+            <thead class="bg-[#26282b] text-slate-300 border-b pc-border sticky top-0 font-bold">
+              <tr>
+                <th class="p-2">الطالبة</th>
+                <th class="p-2">الفصل</th>
+                <th class="p-2">التدريب</th>
+                <th class="p-2">الوقت</th>
+                <th class="p-2 text-center">الدرجة</th>
+                <th class="p-2 text-center">معاينة الحل</th>
+              </tr>
+            </thead>
+            <tbody id="submissionsTableBody" class="divide-y divide-[#393b40] text-slate-300">
+              <tr>
+                <td colspan="6" class="p-4 text-center text-slate-500">جاري جلب إجابات الطالبات من السحابة...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- صندوق الإشعارات السريعة -->
+  <div id="toastNotification" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-slate-900/90 text-white border border-slate-700 px-4 py-2 rounded-lg text-xs font-bold shadow-xl hidden z-50 pointer-events-none">
+    رسالة إشعار
+  </div>
+
+  <!-- شاشة بداية تسجيل الدخول واختيار اسم الطالبة والصف باللون الأبيض -->
+  <div id="loginModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[60] flex items-center justify-center p-4">
+    <div class="bg-white text-slate-800 rounded-3xl p-6 sm:p-7 w-full max-w-md shadow-2xl flex flex-col gap-4 border border-slate-100" dir="rtl">
+      
+      <!-- شعار وعنوان شاشة الدخول -->
+      <div class="text-center space-y-1.5 pb-1">
+        <div class="flex justify-center mb-1">
+          <div class="w-16 h-16 p-2 rounded-2xl bg-amber-50 border border-amber-200/80 shadow-md flex items-center justify-center">
+            <svg class="w-12 h-12" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10 58 A 42 42 0 0 1 90 58" stroke="#f59e0b" stroke-width="7" stroke-linecap="round"/>
+              <path d="M22 58 A 30 30 0 0 1 78 58" stroke="#fbbf24" stroke-width="4" stroke-opacity="0.8" stroke-linecap="round"/>
+              <path d="M50 78 C 38 72 20 72 12 76 L 15 85 C 25 80 40 80 50 86 C 60 80 75 80 85 85 L 88 76 C 80 72 62 72 50 78 Z" fill="#0f3460"/>
+              <path d="M50 72 C 38 66 22 66 14 70 L 16 75 C 24 71 38 71 50 76 C 62 71 76 71 84 75 L 86 70 C 78 66 62 66 50 72 Z" fill="#16213e"/>
+              <path d="M48 20 Q 50 14 52 20 Q 55 10 50 4 Q 45 10 48 20 Z" fill="#22c55e"/>
+              <path d="M47 16 Q 50 12 53 16 Q 52 10 50 6 Q 48 10 47 16 Z" fill="#ef4444"/>
+              <rect x="46" y="24" width="8" height="24" rx="2" fill="#0f3460"/>
+              <path d="M46 28 L 54 32 M 46 36 L 54 40" stroke="#ffffff" stroke-width="1.8"/>
+              <path d="M46 48 L 50 68 L 54 48 Z" fill="#9ca3af"/>
+              <circle cx="50" cy="56" r="1.5" fill="#111827"/>
+              <line x1="50" y1="56" x2="50" y2="68" stroke="#111827" stroke-width="1"/>
+            </svg>
+          </div>
+        </div>
+        <h2 class="text-base sm:text-lg font-black text-slate-900">مدرسة موضي سلطان العيسى الثانوية بنات</h2>
+        <div class="inline-block bg-amber-100/70 border border-amber-300 text-amber-900 text-[11px] font-bold px-3 py-0.5 rounded-full">
+          إعداد وتصميم: أ. وفاء عليان
+        </div>
+        <p class="text-xs text-slate-500 font-medium pt-1" id="loginTeacherGreeting">يرجى تسجيل الدخول المعتمد للبدء</p>
+      </div>
+
+      <!-- تبديل نوع الدخول: طالبة / معلمة -->
+      <div class="flex bg-slate-100 p-1 rounded-xl text-xs font-bold text-slate-600">
+        <button id="loginTabStudent" class="flex-1 py-1.5 rounded-lg bg-white text-[#3574f0] shadow-sm transition">
+          🎓 دخول طالبة
+        </button>
+        <button id="loginTabTeacher" class="flex-1 py-1.5 rounded-lg text-slate-500 hover:text-slate-800 transition">
+          🔒 دخول معلمة
+        </button>
+      </div>
+
+      <!-- 1. نموذج دخول الطالبة (فقط لمن هن بالقائمة) -->
+      <div id="studentLoginSection" class="space-y-3 pt-1">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">اختاري الفصل الدراسي:</label>
+          <select id="modalClassSelect" class="w-full bg-slate-50 border border-slate-300 focus:border-[#3574f0] focus:bg-white text-slate-800 font-bold text-xs sm:text-sm px-3.5 py-2.5 rounded-xl focus:outline-none cursor-pointer transition shadow-inner">
+            <!-- Populated dynamically -->
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">اختاري اسمكِ من كشف الفصل المعتمد:</label>
+          <select id="modalStudentSelect" class="w-full bg-slate-50 border border-slate-300 focus:border-[#3574f0] focus:bg-white text-slate-800 font-bold text-xs sm:text-sm px-3.5 py-2.5 rounded-xl focus:outline-none cursor-pointer transition shadow-inner">
+            <!-- Populated dynamically -->
+          </select>
+          <p class="text-[10px] text-slate-400 mt-1 flex items-center gap-1">
+            <span>🛡️</span>
+            <span>الدخول مخصص حصراً للطالبات المسجلات في قوائم الفصول أعلاه.</span>
+          </p>
+        </div>
+
+        <div class="pt-2">
+          <button id="confirmLoginBtn" class="w-full py-3 bg-[#3574f0] hover:bg-[#2b61cd] active:scale-[0.99] text-white font-bold text-xs sm:text-sm rounded-xl shadow-lg shadow-[#3574f0]/25 transition flex items-center justify-center gap-2">
+            <span>دخول لمحرر بايثون</span>
+            <span>←</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 2. نموذج دخول المعلمة بكلمة المرور / PIN -->
+      <div id="teacherLoginSection" class="hidden space-y-3 pt-1">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">رمز المرور الخاص بالمعلمة (PIN):</label>
+          <input type="password" id="modalTeacherPinInput" maxlength="6" placeholder="••••" class="w-full bg-slate-50 border border-slate-300 focus:border-[#3574f0] focus:bg-white text-center text-slate-900 font-mono text-base tracking-widest px-3.5 py-2.5 rounded-xl focus:outline-none transition shadow-inner">
+          <p id="modalTeacherPinError" class="text-[11px] text-rose-500 font-bold mt-1.5 text-center hidden">رمز المرور غير صحيح!</p>
+        </div>
+
+        <div class="pt-2">
+          <button id="confirmTeacherLoginBtn" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white font-bold text-xs sm:text-sm rounded-xl shadow-lg shadow-emerald-600/25 transition flex items-center justify-center gap-2">
+            <span>دخول لوحة التحكم للمعلمة</span>
+            <span>🔒</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- نافذة تسمية ملف جديد -->
+  <div id="newFileModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="pc-bg-panel border pc-border rounded-xl p-4 w-full max-w-sm shadow-2xl flex flex-col gap-3" dir="rtl">
+      <div class="flex items-center justify-between border-b pc-border pb-2">
+        <h3 class="font-bold text-white text-xs flex items-center gap-1.5">
+          <span>📄</span>
+          <span>إنشاء ملف بايثون جديد</span>
+        </h3>
+        <button id="closeNewFileModalBtn" class="text-slate-400 hover:text-white text-sm">✕</button>
+      </div>
+      <p class="text-[11px] text-slate-300">أدخلي اسم الملف البرمجي:</p>
+      <div class="flex items-center bg-[#1e1f22] border pc-border px-2 py-1 rounded" dir="ltr">
+        <input type="text" id="newFileNameInput" placeholder="my_program" class="flex-1 bg-transparent text-white font-mono text-xs focus:outline-none">
+        <span class="text-slate-500 font-mono text-xs select-none">.py</span>
+      </div>
+      <div class="flex justify-end gap-2 pt-1">
+        <button id="cancelNewFileBtn" class="px-3 py-1 bg-[#1e1f22] hover:bg-[#393b40] text-slate-300 rounded text-xs border pc-border">
+          إلغاء
+        </button>
+        <button id="confirmCreateFileBtn" class="px-4 py-1 bg-[#3574f0] hover:bg-[#2b61cd] text-white font-bold rounded text-xs">
+          إنشاء الملف
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 8. المنطق البرمجي الكامل (JavaScript) ================= -->
+  <script>
+    /* -------------------------------------------------------------
+       1. إعدادات Firebase والربط المباشر بمشروع python-answers
+       ------------------------------------------------------------- */
+    const firebaseConfig = {
+      apiKey: "AIzaSyA1YQbYlMfshxvL7qNlGEQ6uAVK10jJ6Ag",
+      authDomain: "python-answers.firebaseapp.com",
+      projectId: "python-answers",
+      storageBucket: "python-answers.firebasestorage.app",
+      messagingSenderId: "3335708296",
+      appId: "1:3335708296:web:245c441fe41bfeab6b893d"
+    };
+
+    let db = null;
+    try {
+      if (typeof firebase !== "undefined") {
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.firestore();
+      }
+    } catch (e) {
+      console.warn("Firebase Init Notice:", e);
+    }
+
+    /* -------------------------------------------------------------
+       2. المعلمات المعتمدات والفصول والروابط الثابتة
+       ------------------------------------------------------------- */
+    const STUDENTS_10_1 = [
+      "أسيل عمر أحمد الأحمد", "الجازي حمد محمد حمد مهلهل جارالله المري", "العنود علي حسن العجمي",
+      "الغلا جاسم حميد الخالدي", "الورد عبدالله فهد الدوسري", "انفال عبدالمغني ناصر بوعركي",
+      "جود بدر شافي الهاجري", "حوراء علي القزويني", "دانه احمد شهاب خلف",
+      "رتاج عبد الله سالم الفزارية", "رفعه خالد احمد عبدالله الشمرى", "ريم عبدالله أمين الجفن",
+      "ريما عبدالمحسن راجح ذعار تركي سعد الدوسري", "ريماس جمال بدر الكلدي", "ساره عبدالله فهد الميع",
+      "شيخة عبدالله عبدالرزاق خلف", "عهد محمد جابر عبدالمحسن محمد المري", "فاطمة حيدر يعقوب محمد",
+      "فاطمه راشد محمد المري", "فاطمه طاهر عبدالوهاب الشمالي", "فوزيه عقيل عبدالحسين ناصر",
+      "كوثر محمد على حمدون", "مريم محمد باقر اكبر", "منال سليمان مناحي الدوسري",
+      "منيفه سلمان خلف الشمري", "نورة بدر ناصر الجريد"
+    ];
+
+    const STUDENTS_10_2 = [
+      "الاء محمد حاجى الصراف", "السندا حمد محمد العجمي", "الكادي نادر سعود العجمي",
+      "جوري عبدالله سالم العجمي", "حلا سعيد محمد العجمي", "حور فهد فرج العجمي",
+      "حور مزيد خلف عقيلي", "دانه غانم محمد الدوسري", "ريهام محمد صلاح الحسينان",
+      "زينب عبدالله احمد الصفار", "ساره حمد مكراد المحفوظ", "ساره سليمان اجفين العازمي",
+      "سلمى سعد حماد الدوسري", "شيخة فنر مطر العنزي", "عائشه طلال سعد العنزي",
+      "فاطمة بدر محمد العجمي", "فاطمه سامى محمد يحي ملحاني", "فاطمه طلال كريم صالح مانع",
+      "فرح عبد العزيز احمد بوقريص", "فرح مشعل طارق القطان", "كوثر محمد نزار حبيب",
+      "لجين محمد عبدالمحسن الشمري", "مديحة حازم عبدالحميدالمطوع", "مريم سيد رمضان ابوخطوة حسن",
+      "مريم علي سليمان امير", "مضاوي خالد سريان بريك العتيبي"
+    ];
+
+    const STUDENTS_10_3 = [
+      "أسيل بدر تركى رحيل", "انفال عبدالله مسعود السعيد", "جنى خالد رضا غلام",
+      "حور احمد عبيد سيار القلاد الرشيدي", "دلال مشاري غسان الحملى", "ريم على محمد العبدالهادي",
+      "زهراء محمد جاسم الرامزي", "ساره ايوب احمد سالم", "ساره مشعل عبد الله الرميثان الصليلي",
+      "شروق محمد فؤاد دابي", "شيخه سعيد نايف الدوسري", "صديقه حسين السيد محمد بهبهاني",
+      "عائشه سعود طارق محمد جابر جاسم", "عايشه خالد فهيد العجمي", "غاليه مجدي سالم الجويهل",
+      "فاطمه احمد فاضل عبدالرحمن ع الكندري", "لولوه يونس نوح المسري", "مريم احمد عادل سعدون",
+      "مريم ثامر محمد الخالدى", "منيره رجا محمد فلاح", "موضي سعد سلطان السبيعى",
+      "موضي محمد ماجد العجمي", "مياسه جارالله سالم راشد المري", "نوره علي سالم راشد المري",
+      "نوره ناصر سعد ناصر مبارك الدوسرى", "هاجر سعيد نايف حباب مبارك الدوسري", "ياسمين عبدالله محمد الحربى"
+    ];
+
+    const STUDENTS_10_5 = [
+      "آمار غانم مطر العنزي", "أريام نواف رفاع العنزى", "أفراح سعدون حمود سعدون الشملان القطاع",
+      "الجازي خالد سعود العجمي", "جود منصور ناصر حسن العجمى", "دانه عبدالعزيز سعود الصالح",
+      "ديمه مبارك محمد عبدالله دريب العجمى", "رحمه محمد حمد العجمى", "رهام صالح جابر المري",
+      "ريتاج مشعل غازي محمد منير ف العتيبي", "ساره عيسى دخيل الرشيدي", "سلمى فهد سعود الدوسري",
+      "شاهه صالح محمد العنجري", "صبا نواف فهد الدوسري", "عهود فهد ناصر العجمي",
+      "غيده راشد عايد مرزوق المطيري", "فاطمه فهد حمود المطيري", "مريم سلمان فهد المنشرح الحيان",
+      "مسك مشعل سيف عجيمي كثير", "منى جابر عبدالمحسن الشمري", "موضي محمد سالم الهاجري",
+      "نجيبه محمد جمعه الشرقاوى", "نوره محمد حمد العجمي", "نوير فهيد محمد العجمى",
+      "هيفا هادى فهاد العدوانى", "ياسمين سلمان ساهر العنزي"
+    ];
+
+    const TEACHERS = {
+      wafaa: {
+        id: "wafaa",
+        name: "أ. وفاء عليان",
+        pin: "1010",
+        classes: ["10-1", "10-2", "10-3", "10-5"],
+        students: {
+          "10-1": STUDENTS_10_1,
+          "10-2": STUDENTS_10_2,
+          "10-3": STUDENTS_10_3,
+          "10-5": STUDENTS_10_5
+        }
+      },
+      fatima: {
+        id: "fatima",
+        name: "أ. فاطمة المطيري",
+        pin: "2020",
+        classes: ["10-1", "10-2", "10-4", "10-5"],
+        students: {
+          "10-1": STUDENTS_10_1,
+          "10-2": STUDENTS_10_2,
+          "10-4": [],
+          "10-5": STUDENTS_10_5
+        }
+      },
+      shouq: {
+        id: "shouq",
+        name: "أ. شوق بو عباس",
+        pin: "3030",
+        classes: ["10-1", "10-5", "10-6"],
+        students: {
+          "10-1": STUDENTS_10_1,
+          "10-5": STUDENTS_10_5,
+          "10-6": []
+        }
+      },
+      nouf: {
+        id: "nouf",
+        name: "أ. نوف الجهيم",
+        pin: "4040",
+        classes: ["10-2", "10-5", "10-7", "10-8"],
+        students: {
+          "10-2": STUDENTS_10_2,
+          "10-5": STUDENTS_10_5,
+          "10-7": [],
+          "10-8": []
+        }
+      }
+    };
+
+    // تحديد المعلمة من الرابط: ?teacher=wafaa
+    const urlParams = new URLSearchParams(window.location.search);
+    const teacherParam = urlParams.get("teacher") || "wafaa";
+    const activeTeacher = TEACHERS[teacherParam] || TEACHERS.wafaa;
+
+    /* -------------------------------------------------------------
+       3. أوراق عمل الكتاب الوزاري المعتمدة (الصف العاشر) مع الحلول النموذجية الكاملة
+       ------------------------------------------------------------- */
+    const WORKSHEETS_DATA = [
+      {
+        id: "ws6",
+        title: "ورقة عمل (6) - رحلة إلى أبراج الكويت",
+        page: 69,
+        filename: "School_Trip.py",
+        desc: "حل ورقة عمل 6: استقبال أسعار الدخول والوجبة والمواصلات وحساب وطباعة إجمالي التكلفة.",
+        starterCode: `# ورقة عمل (6) - كتاب تقنية المعلومات الصف العاشر صـ 69
+# حل برنامج: رحلة إلى أبراج الكويت
+
+# 1. استقبال المدخلات من المستخدم كأعداد عشرية (float)
+ticket_price = float(input("أدخل سعر دخول أبراج الكويت: "))
+meal_price = float(input("أدخل سعر الوجبة: "))
+transport_price = float(input("أدخل سعر المواصلات: "))
+
+# 2. حساب إجمالي تكلفة الرحلة
+total_cost = ticket_price + meal_price + transport_price
+
+# 3. طباعة إجمالي تكلفة الرحلة
+print("إجمالي تكلفة الرحلة =", total_cost, "د.ك")
+`
+      },
+      {
+        id: "ws7",
+        title: "ورقة عمل (7) - رسوم حقائب السفر الزائدة",
+        page: 71,
+        filename: "weight_calculator.py",
+        desc: "حل ورقة عمل 7: استقبال اسم المسافر والوزن الإضافي وحساب الرسوم (5 د.ك لكل كجم).",
+        starterCode: `# ورقة عمل (7) - كتاب تقنية المعلومات الصف العاشر صـ 71
+# حل برنامج: حساب المبلغ المستحق لحقائب السفر
+
+# 1. Get passenger name
+passenger_name = input("Enter passenger name: ")
+
+# 2. Get extra bag weight in kg (float)
+extra_weight = float(input("Enter extra bag weight in kg: "))
+
+# 3. Calculate extra fee (بضرب الوزن في خمسة دنانير كويتية)
+extra_fee = extra_weight * 5
+
+# 4. Print details
+print("Passenger Name:", passenger_name)
+print("Extra Weight:", extra_weight, "kg")
+print("Extra Fee:", extra_fee, "KD")
+`
+      },
+      {
+        id: "ws8",
+        title: "ورقة عمل (8) - تأمين كلمة المرور (عكس السلسلة)",
+        page: 85,
+        filename: "reverse_string.py",
+        desc: "حل ورقة عمل 8: استقبال كلمة المرور وعكس ترتيب أحرفها باستخدام التقطيع [::-1].",
+        starterCode: `# ورقة عمل (8) - كتاب تقنية المعلومات الصف العاشر صـ 85
+# حل برنامج: تأمين كلمة المرور
+
+# 1. استقبال كلمة المرور من المستخدم
+password = input("Enter your password: ")
+
+# 2. استخدام التقطيع Slicing لعكس الكلمة
+reversed_password = password[::-1]
+
+# 3. طباعة الكلمة المعكوسة ككلمة مرور محمية
+print("Original password:", password)
+print("Protected password:", reversed_password)
+`
+      },
+      {
+        id: "ws9",
+        title: "ورقة عمل (9) - تقطيع السلسلة (دينار وفلس)",
+        page: 87,
+        filename: "amount.py",
+        desc: "حل ورقة عمل 9: استخراج جزء الدينار قبل الفاصلة وجزء الفلس بعدها وطباعتهما.",
+        starterCode: `# ورقة عمل (9) - كتاب تقنية المعلومات الصف العاشر صـ 87
+# حل برنامج: تقطيع السلسلة النصية للمبلغ المالي
+
+# 1. استقبال المبلغ المالي
+var_amount = input("Enter amount e.g (500.750): ")
+
+# 2. تحديد موضع الفاصلة العشرية
+var_position = var_amount.find('.')
+
+# 3. استخراج جزء الدينار (ما قبل الفاصلة) وجزء الفلس (ما بعد الفاصلة)
+var_kd = var_amount[:var_position]
+var_fils = var_amount[var_position + 1:]
+
+# 4. طباعة المبلغ بالتنسيق المطلوب
+print(f"{var_kd} KD And {var_fils} fils")
+`
+      },
+      {
+        id: "ws10",
+        title: "ورقة عمل (10) - تقطيع الاسم الكامل",
+        page: 89,
+        filename: "full_name.py",
+        desc: "حل ورقة عمل 10: حساب طول الاسم وتقطيعه إلى أول وأوسط وأخير وتكبير الحرف الأول.",
+        starterCode: `# ورقة عمل (10) - كتاب تقنية المعلومات الصف العاشر صـ 89
+# حل برنامج: تقسيم الاسم الكامل ثلاثياً
+
+# 1. استقبال الاسم الكامل ثلاثياً بالإنجليزية
+full_name = input("Enter your full name (Three Parts): ")
+
+# 2. طباعة عدد الأحرف باستخدام دالة len
+print("Characters in your name:", len(full_name))
+
+# 3. إيجاد مواضع المسافات
+position_space1 = full_name.find(' ')
+position_space2 = full_name.find(' ', position_space1 + 1)
+
+# 4. التقطيع للحصول على الأجزاء الثلاثة
+first_name = full_name[:position_space1]
+second_name = full_name[position_space1 + 1:position_space2]
+third_name = full_name[position_space2 + 1:]
+
+# 5. طباعة كل جزء مع تكبير أول حرف بواسطة capitalize()
+print("First Name:", first_name.capitalize())
+print("Middle Name:", second_name.capitalize())
+print("Last Name:", third_name.capitalize())
+`
+      },
+      {
+        id: "ws11",
+        title: "ورقة عمل (11) - حساب الخصومات على المنتجات",
+        page: 105,
+        filename: "price_final_calculate.py",
+        desc: "حل ورقة عمل 11: خصم 25% إذا تجاوز 1000، و 15% إذا كان بين 500 و 1000، وغير ذلك لا خصم.",
+        starterCode: `# ورقة عمل (11) - كتاب تقنية المعلومات الصف العاشر صـ 105
+# حل برنامج: حساب الخصومات على المنتجات
+
+price = float(input("أدخل السعر الإجمالي للمنتجات: "))
+
+# التحقق من قيمة السعر وتحديد نسبة الخصم
+if price > 1000:
+    discount = price * 0.25
+elif price >= 500:
+    discount = price * 0.15
+else:
+    discount = 0.0
+
+# حساب السعر النهائي بعد الخصم
+final_cost = price - discount
+
+print("قيمة الخصم =", discount, "د.ك")
+print("السعر النهائي بعد الخصم =", final_cost, "د.ك")
+`
+      },
+      {
+        id: "ws12",
+        title: "ورقة عمل (12) - تصميم آلة حاسبة",
+        page: 107,
+        filename: "Calculator.py",
+        desc: "حل ورقة عمل 12: تنفيذ العمليات الأربع مع التحقق من عدم القسمة على صفر.",
+        starterCode: `# ورقة عمل (12) - كتاب تقنية المعلومات الصف العاشر صـ 107
+# حل برنامج: تصميم آلة حاسبة
+
+# Conditions and math operator
+num1 = float(input("Enter First Number: "))
+num2 = float(input("Enter Second Number: "))
+operator = input("Enter Math Operator (+, -, *, /): ")
+
+if operator == '+':
+    print("Result:", num1 + num2)
+elif operator == '-':
+    # Check the math operator -
+    print("Result:", num1 - num2)
+elif operator == '*':
+    # Check the math operator *
+    print("Result:", num1 * num2)
+elif operator == '/':
+    if num2 != 0:
+        print("Result:", num1 / num2)
+    else:
+        print("It cannot be divided by zero")
+else:
+    print("Unsupported operator")
+`
+      },
+      {
+        id: "ws13",
+        title: "ورقة عمل (13) - برنامج تخمين عدد",
+        page: 127,
+        filename: "number_correct.py",
+        desc: "حل ورقة عمل 13: تكرار while يستمر حتى يطابق تخمين المستخدم الرقم 8.",
+        starterCode: `# ورقة عمل (13) - كتاب تقنية المعلومات الصف العاشر صـ 127
+# حل برنامج: تخمين عدد صحيح
+
+number_correct = 8
+number_player = 0
+
+# Looping using while until numbers match
+while number_player != number_correct:
+    number_player = int(input("Guess what is the number in my mind! "))
+    
+    if number_player > number_correct:
+        print("The player number is higher.")
+    elif number_player < number_correct:
+        # if the number is less, show message
+        print("The player number is lower.")
+
+# وعند التطابق ينتهي التكرار ويطبع:
+print("Correct! Well done.")
+`
+      },
+      {
+        id: "ws14",
+        title: "ورقة عمل (14) - برنامج جدول الضرب",
+        page: 129,
+        filename: "table_Multiplication.py",
+        desc: "حل ورقة عمل 14: تكرار for لطباعة ناتج ضرب العدد من 1 إلى 12.",
+        starterCode: `# ورقة عمل (14) - كتاب تقنية المعلومات الصف العاشر صـ 129
+# حل برنامج: جدول الضرب لعدد محدد
+
+number = int(input("Please enter an integer number: "))
+print("Multiplication table for", number)
+
+# حلقة تكرارية لطباعة جدول الضرب من 1 إلى 12
+for i in range(1, 13):
+    result = number * i
+    print(f"{number} x {i} = {result}")
+`
+      },
+      {
+        id: "ws15",
+        title: "ورقة عمل (15) - معالجة الاستثناءات في الفاتورة",
+        page: 143,
+        filename: "invoice_exceptions.py",
+        desc: "حل ورقة عمل 15: حساب السعر بعد الخصم مع التحقق من صحة المدخلات ومعالجة ValueError.",
+        starterCode: `# ورقة عمل (15) - كتاب تقنية المعلومات الصف العاشر صـ 143
+# حل برنامج: حساب فاتورة المشتريات بعد الخصم مع معالجة الأخطاء
+
+try:
+    price = float(input("أدخل السعر الأصلي للفاتورة: "))
+    discount = float(input("أدخل نسبة الخصم (%): "))
+    
+    if price <= 0:
+        print("Error: Price must be greater than zero")
+    elif discount < 0 or discount > 100:
+        print("Error: Discount must be between 0% and 100%")
+    else:
+        price_net = price - (price * (discount / 100))
+        print("Net price after discount is:", price_net)
+except ValueError:
+    print("Error: Please enter valid numeric values.")
+finally:
+    print("Program has ended")
+`
+      },
+      {
+        id: "ws16",
+        title: "ورقة عمل (16) - مؤشر كتلة الجسم BMI",
+        page: 145,
+        filename: "BMI.py",
+        desc: "حل ورقة عمل 16: حساب BMI والتكرار وتحديد الفئة ومعالجة استثناءات القيمة والقسمة على صفر.",
+        starterCode: `# ورقة عمل (16) - كتاب تقنية المعلومات الصف العاشر صـ 145
+# حل برنامج: حساب مؤشر كتلة الجسم BMI مع معالجة الاستثناءات
+
+while True:
+    try:
+        # Get user input for weight and height
+        kg_weight = float(input("Enter your weight in kilograms: "))
+        m_height = float(input("Enter your height in meters: "))
+        
+        # Calculate BMI = الوزن / (الطول ** 2)
+        value_bmi = kg_weight / (m_height ** 2)
+        
+        # Display the BMI formatted to 2 decimals
+        print(f"Your BMI is: {value_bmi:.2f}")
+        
+        # Determine BMI category
+        if value_bmi < 18.5:
+            print("You are underweight.")
+        elif 18.5 <= value_bmi < 25:
+            print("You have a normal weight.")
+        elif 25 <= value_bmi < 30:
+            print("You are overweight.")
+        else:
+            print("You are obese.")
+            
+        program_stop = input("Press Enter to continue or Q to quit: ").capitalize()
+        if program_stop == 'Q':
+            break
+            
+    except ValueError:
+        print("Error: Please enter valid numbers for height and weight.")
+    except ZeroDivisionError:
+        print("Error: You cannot divide by zero!")
+`
+      }
+    ];
+
+    /* -------------------------------------------------------------
+       4. التقويم والمشاريع: فارغة مبدئياً وتضيفهما المعلمة حصراً
+       ------------------------------------------------------------- */
+    let currentAssessmentTask = null; // فارغ مبدئياً
+    let currentProjectTask = null;    // فارغ مبدئياً
+
+    /* -------------------------------------------------------------
+       5. حالة التطبيق وعناصر الـ DOM
+       ------------------------------------------------------------- */
+    const BLANK_START_TASK = {
+      id: "blank_start",
+      title: "ملف برمجي جديد",
+      page: null,
+      filename: "main.py",
+      desc: "بيئة بايثون جاهزة لكتابة الكود أو اختيار ورقة عمل من قائمة 'أوراق العمل' في الأعلى.",
+      starterCode: `# مرحباً بكِ في مختبر بايثون
+# يمكنكِ البدء بكتابة كودكِ هنا، أو استعراض أوراق العمل وحلولها من زر "أوراق العمل" أعلاه.
+
+`
+    };
+
+    let currentTask = BLANK_START_TASK;
+    let isTeacherExercise = false;
+    let pyodideInstance = null;
+    let inputResolveFn = null;
+    let customUserFiles = [];
+    let currentViewMode = "blank";    // 'blank', 'worksheets', 'assessment', 'project'
+    let uploadedTeacherFiles = [];
+    let hiddenWorksheetIds = [];      // المعلمة تتحكم بإخفائها
+
+    // عناصر الصفحة
+    const codeTextarea = document.getElementById("codeTextarea");
+    const lineNumbers = document.getElementById("lineNumbers");
+    const caretPosition = document.getElementById("caretPosition");
+    const terminalOutput = document.getElementById("terminalOutput");
+    const inlineInputRow = document.getElementById("inlineInputRow");
+    const inlinePromptText = document.getElementById("inlinePromptText");
+    const inlineConsoleInput = document.getElementById("inlineConsoleInput");
+    const inlineSubmitBtn = document.getElementById("inlineSubmitBtn");
+    const runPythonBtn = document.getElementById("runPythonBtn");
+    const downloadCodeBtn = document.getElementById("downloadCodeBtn");
+    const newFileBtn = document.getElementById("newFileBtn");
+    const resetCodeBtn = document.getElementById("resetCodeBtn");
+    const submitAnswerBtn = document.getElementById("submitAnswerBtn");
+    const clearTerminalBtn = document.getElementById("clearTerminalBtn");
+
+    const assessmentTab = document.getElementById("assessmentTab");
+    const assessmentTabTitle = document.getElementById("assessmentTabTitle");
+    const assessmentNewBadge = document.getElementById("assessmentNewBadge");
+
+    const projectTab = document.getElementById("projectTab");
+    const projectTabTitle = document.getElementById("projectTabTitle");
+    const projectNewBadge = document.getElementById("projectNewBadge");
+
+    const activeEditorTab = document.getElementById("activeEditorTab");
+
+    const toggleTeacherUploadFormBtn = document.getElementById("toggleTeacherUploadFormBtn");
+    const closeTeacherUploadFormBtn = document.getElementById("closeTeacherUploadFormBtn");
+    const teacherUploadForm = document.getElementById("teacherUploadForm");
+    const toggleWorksheetsControlBtn = document.getElementById("toggleWorksheetsControlBtn");
+    const closeWorksheetsControlBtn = document.getElementById("closeWorksheetsControlBtn");
+    const worksheetsControlPanel = document.getElementById("worksheetsControlPanel");
+    const worksheetsTogglesContainer = document.getElementById("worksheetsTogglesContainer");
+    const enableAllWorksheetsBtn = document.getElementById("enableAllWorksheetsBtn");
+    const disableAllWorksheetsBtn = document.getElementById("disableAllWorksheetsBtn");
+
+    const newFileModal = document.getElementById("newFileModal");
+    const newFileNameInput = document.getElementById("newFileNameInput");
+    const confirmCreateFileBtn = document.getElementById("confirmCreateFileBtn");
+    const cancelNewFileBtn = document.getElementById("cancelNewFileBtn");
+    const closeNewFileModalBtn = document.getElementById("closeNewFileModalBtn");
+    const sidebarNewFileBtn = document.getElementById("sidebarNewFileBtn");
+
+    const taskTitle = document.getElementById("taskTitle");
+    const taskTypeBadge = document.getElementById("taskTypeBadge");
+    const taskPageBadge = document.getElementById("taskPageBadge");
+    const taskDescription = document.getElementById("taskDescription");
+    const tabFilename = document.getElementById("tabFilename");
+    const currentFileDropdownName = document.getElementById("currentFileDropdownName");
+    const runTabTitle = document.getElementById("runTabTitle");
+
+    const studentNameInput = document.getElementById("studentNameInput");
+    const studentClassSelect = document.getElementById("studentClassSelect");
+    const headerStudentName = document.getElementById("headerStudentName");
+    const headerStudentClass = document.getElementById("headerStudentClass");
+    const changeStudentBtn = document.getElementById("changeStudentBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const teacherLogoutBtn = document.getElementById("teacherLogoutBtn");
+
+    const loginModal = document.getElementById("loginModal");
+    const modalClassSelect = document.getElementById("modalClassSelect");
+    const modalStudentSelect = document.getElementById("modalStudentSelect");
+    const confirmLoginBtn = document.getElementById("confirmLoginBtn");
+    const loginTeacherGreeting = document.getElementById("loginTeacherGreeting");
+
+    const loginTabStudent = document.getElementById("loginTabStudent");
+    const loginTabTeacher = document.getElementById("loginTabTeacher");
+    const studentLoginSection = document.getElementById("studentLoginSection");
+    const teacherLoginSection = document.getElementById("teacherLoginSection");
+    const modalTeacherPinInput = document.getElementById("modalTeacherPinInput");
+    const confirmTeacherLoginBtn = document.getElementById("confirmTeacherLoginBtn");
+    const modalTeacherPinError = document.getElementById("modalTeacherPinError");
+
+    const sidebarDrawer = document.getElementById("sidebarDrawer");
+    const openWorksheetsBtn = document.getElementById("openWorksheetsBtn");
+    const openAssessmentHeaderBtn = document.getElementById("openAssessmentHeaderBtn");
+    const openProjectHeaderBtn = document.getElementById("openProjectHeaderBtn");
+    const closeSidebarBtn = document.getElementById("closeSidebarBtn");
+    const tabBtnWorksheets = document.getElementById("tabBtnWorksheets");
+    const tabBtnAssessment = document.getElementById("tabBtnAssessment");
+    const tabBtnProject = document.getElementById("tabBtnProject");
+    const drawerListContainer = document.getElementById("drawerListContainer");
+
+    const teacherModal = document.getElementById("teacherModal");
+    const closeTeacherModalBtn = document.getElementById("closeTeacherModalBtn");
+    const secretLogoTrigger = document.getElementById("secretLogoTrigger");
+    const teacherPinInput = document.getElementById("teacherPinInput");
+    const verifyPinBtn = document.getElementById("verifyPinBtn");
+    const pinEntryView = document.getElementById("pinEntryView");
+    const teacherDashboardView = document.getElementById("teacherDashboardView");
+    const pinErrorMsg = document.getElementById("pinErrorMsg");
+    const submissionsTableBody = document.getElementById("submissionsTableBody");
+    const filterClassSelect = document.getElementById("filterClassSelect");
+    const refreshDataBtn = document.getElementById("refreshDataBtn");
+    const copyTeacherLinkBtn = document.getElementById("copyTeacherLinkBtn");
+    const exportExcelBtn = document.getElementById("exportExcelBtn");
+
+    const teacherActivityTypeSelect = document.getElementById("teacherActivityTypeSelect");
+    const teacherTargetClassSelect = document.getElementById("teacherTargetClassSelect");
+    const teacherTaskTitleInput = document.getElementById("teacherTaskTitleInput");
+    const teacherPyFileInput = document.getElementById("teacherPyFileInput");
+    const teacherUploadedFilesTags = document.getElementById("teacherUploadedFilesTags");
+    const sendAssessmentToStudentsBtn = document.getElementById("sendAssessmentToStudentsBtn");
+
+    const viewInstructionsMobileBtn = document.getElementById("viewInstructionsMobileBtn");
+    const mobileInstructionsSheet = document.getElementById("mobileInstructionsSheet");
+
+    /* -------------------------------------------------------------
+       6. الإعداد المبدئي للتطبيق
+       ------------------------------------------------------------- */
+    function setupTeacherInfo() {
+      const modalTeacherName = document.getElementById("modalTeacherName");
+      if (modalTeacherName) {
+        modalTeacherName.textContent = `لوحة المعلمة: ${activeTeacher.name}`;
+      }
+      if (loginTeacherGreeting) {
+        loginTeacherGreeting.textContent = `مرحباً بكِ في مختبر ${activeTeacher.name} لمادة تقنية المعلومات`;
+      }
+    }
+
+    function setupClassAndStudentDropdowns() {
+      if (!modalClassSelect) return;
+      modalClassSelect.innerHTML = "";
+      activeTeacher.classes.forEach(cls => {
+        const opt = document.createElement("option");
+        opt.value = cls;
+        opt.textContent = `الصف ${cls}`;
+        modalClassSelect.appendChild(opt);
+      });
+
+      if (teacherTargetClassSelect) {
+        teacherTargetClassSelect.innerHTML = `<option value="all">جميع الفصول</option>`;
+        activeTeacher.classes.forEach(cls => {
+          const opt = document.createElement("option");
+          opt.value = cls;
+          opt.textContent = `فصل ${cls}`;
+          teacherTargetClassSelect.appendChild(opt);
+        });
+      }
+
+      if (filterClassSelect) {
+        filterClassSelect.innerHTML = `<option value="all">جميع الفصول</option>`;
+        activeTeacher.classes.forEach(cls => {
+          const opt = document.createElement("option");
+          opt.value = cls;
+          opt.textContent = `فصل ${cls}`;
+          filterClassSelect.appendChild(opt);
+        });
+      }
+
+      updateModalStudentList();
+      modalClassSelect.addEventListener("change", updateModalStudentList);
+    }
+
+    function updateModalStudentList() {
+      if (!modalStudentSelect || !modalClassSelect) return;
+      const selectedClass = modalClassSelect.value;
+      const students = activeTeacher.students[selectedClass] || [];
+      modalStudentSelect.innerHTML = "";
+
+      if (students.length === 0) {
+        const opt = document.createElement("option");
+        opt.value = "";
+        opt.textContent = "لا توجد أسماء مسجلة في هذا الفصل";
+        modalStudentSelect.appendChild(opt);
+        return;
+      }
+
+      students.forEach(name => {
+        const opt = document.createElement("option");
+        opt.value = name;
+        opt.textContent = name;
+        modalStudentSelect.appendChild(opt);
+      });
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      loadHiddenWorksheetsState();
+      setupTeacherInfo();
+      setupClassAndStudentDropdowns();
+      checkSavedStudentSession();
+      renderProjectFiles();
+      initPyodideEngine();
+      loadTask(currentTask, false);
+      setupLineNumbersAndCaret();
+      setupEventListeners();
+      listenForTeacherActivities();
+    });
+
+    function loadHiddenWorksheetsState() {
+      const stored = localStorage.getItem("hidden_ws_" + activeTeacher.id);
+      if (stored) {
+        try {
+          hiddenWorksheetIds = JSON.parse(stored);
+        } catch (e) {
+          hiddenWorksheetIds = [];
+        }
+      }
+      if (db) {
+        db.collection("settings").doc("worksheets_visibility_" + activeTeacher.id).onSnapshot(doc => {
+          if (doc.exists) {
+            hiddenWorksheetIds = doc.data().hiddenIds || [];
+            localStorage.setItem("hidden_ws_" + activeTeacher.id, JSON.stringify(hiddenWorksheetIds));
+            if (currentViewMode === "worksheets") {
+              renderDrawerList("worksheets");
+              renderProjectFiles();
+            }
+          }
+        });
+      }
+    }
+
+    async function saveHiddenWorksheetsState() {
+      localStorage.setItem("hidden_ws_" + activeTeacher.id, JSON.stringify(hiddenWorksheetIds));
+      if (db) {
+        try {
+          await db.collection("settings").doc("worksheets_visibility_" + activeTeacher.id).set({
+            hiddenIds: hiddenWorksheetIds,
+            updatedAt: new Date().toISOString()
+          });
+        } catch (err) {
+          console.warn("Firebase visibility sync notice:", err);
+        }
+      }
+      renderWorksheetsControlToggles();
+      if (currentViewMode === "worksheets") {
+        renderDrawerList("worksheets");
+      }
+      renderProjectFiles();
+    }
+
+    function renderWorksheetsControlToggles() {
+      if (!worksheetsTogglesContainer) return;
+      worksheetsTogglesContainer.innerHTML = "";
+      WORKSHEETS_DATA.forEach(ws => {
+        const isHidden = hiddenWorksheetIds.includes(ws.id);
+        const item = document.createElement("div");
+        item.className = "flex items-center justify-between p-2 rounded bg-[#1e1f22] border pc-border";
+        item.innerHTML = `
+          <div class="flex flex-col truncate pr-1">
+            <span class="font-bold text-white text-[11px] truncate">${ws.title}</span>
+            <span class="text-[10px] text-slate-400 font-mono">صـ ${ws.page} (${ws.filename})</span>
+          </div>
+          <button type="button" class="px-2 py-0.5 rounded text-[10px] font-bold transition toggle-ws-btn ${isHidden ? 'bg-rose-900/40 text-rose-300 border border-rose-500/40' : 'bg-emerald-900/40 text-emerald-300 border border-emerald-500/40'}">
+            ${isHidden ? 'مخفية 🚫' : 'ظاهرة 👁️'}
+          </button>
+        `;
+        item.querySelector(".toggle-ws-btn").addEventListener("click", () => {
+          if (isHidden) {
+            hiddenWorksheetIds = hiddenWorksheetIds.filter(id => id !== ws.id);
+          } else {
+            hiddenWorksheetIds.push(ws.id);
+          }
+          saveHiddenWorksheetsState();
+        });
+        worksheetsTogglesContainer.appendChild(item);
+      });
+    }
+
+    function checkSavedStudentSession() {
+      const savedStudent = localStorage.getItem("current_student_" + activeTeacher.id);
+      const savedClass = localStorage.getItem("current_class_" + activeTeacher.id);
+
+      if (savedStudent && savedClass) {
+        // التحقق الإضافي الصارم: التأكد من أن الطالبة ما زالت مسجلة في القائمة
+        const classStudents = activeTeacher.students[savedClass] || [];
+        if (classStudents.includes(savedStudent)) {
+          setStudentProfile(savedStudent, savedClass);
+          loginModal.classList.add("hidden");
+          return;
+        }
+      }
+      
+      // إذا لم تكن مسجلة بالقائمة، تُعرض شاشة الدخول
+      loginModal.classList.remove("hidden");
+    }
+
+    function setStudentProfile(name, cls) {
+      studentNameInput.value = name;
+      studentClassSelect.value = cls;
+      headerStudentName.textContent = name;
+      headerStudentClass.textContent = cls;
+      localStorage.setItem("current_student_" + activeTeacher.id, name);
+      localStorage.setItem("current_class_" + activeTeacher.id, cls);
+    }
+
+    function renderTeacherUploadedTags() {
+      teacherUploadedFilesTags.innerHTML = "";
+      if (uploadedTeacherFiles.length === 0) {
+        teacherUploadedFilesTags.classList.add("hidden");
+        return;
+      }
+      teacherUploadedFilesTags.classList.remove("hidden");
+      uploadedTeacherFiles.forEach((file, index) => {
+        const tag = document.createElement("span");
+        tag.className = "bg-[#393b40] text-emerald-400 font-mono text-[10px] px-2 py-0.5 rounded border border-emerald-500/30 flex items-center gap-1.5";
+        tag.innerHTML = `
+          <span>📄 ${file.name}</span>
+          <button type="button" class="text-rose-400 hover:text-rose-300 font-bold delete-file-btn" data-index="${index}">✕</button>
+        `;
+        tag.querySelector(".delete-file-btn").addEventListener("click", (e) => {
+          e.stopPropagation();
+          uploadedTeacherFiles.splice(index, 1);
+          renderTeacherUploadedTags();
+        });
+        teacherUploadedFilesTags.appendChild(tag);
+      });
+    }
+
+    function renderProjectFiles() {
+      const listContainer = document.getElementById("projectFilesList");
+      listContainer.innerHTML = "";
+
+      let filesToShow = [];
+      if (currentViewMode === "worksheets") {
+        // عرض أوراق العمل المفعلة فقط التي لم تخفها المعلمة
+        filesToShow = WORKSHEETS_DATA.filter(ws => !hiddenWorksheetIds.includes(ws.id));
+      } else if (currentViewMode === "assessment" && currentAssessmentTask) {
+        filesToShow = currentAssessmentTask.files || [currentAssessmentTask];
+      } else if (currentViewMode === "project" && currentProjectTask) {
+        filesToShow = currentProjectTask.files || [currentProjectTask];
+      } else if (customUserFiles.length > 0) {
+        filesToShow = customUserFiles;
+      }
+
+      if (filesToShow.length === 0) {
+        listContainer.innerHTML = `<div class="text-slate-500 text-[11px] p-2 text-center">لا توجد ملفات مفتوحة حالياً.</div>`;
+        return;
+      }
+
+      filesToShow.forEach(file => {
+        const item = document.createElement("div");
+        const isActive = currentTask && currentTask.filename === file.filename;
+        item.className = `px-2 py-1.5 rounded flex items-center gap-2 cursor-pointer transition ${isActive ? 'bg-[#3574f0]/20 text-[#3574f0] font-bold' : 'text-slate-300 hover:bg-[#393b40]'}`;
+        item.innerHTML = `
+          <span>🐍</span>
+          <span class="truncate">${file.filename}</span>
+        `;
+        item.addEventListener("click", () => {
+          loadTask(file, currentViewMode !== "worksheets");
+        });
+        listContainer.appendChild(item);
+      });
+    }
+
+    function loadTask(task, isExercise = false) {
+      currentTask = task;
+      isTeacherExercise = isExercise;
+
+      taskTitle.textContent = task.title;
+      taskDescription.textContent = task.desc;
+      tabFilename.textContent = task.filename;
+      currentFileDropdownName.textContent = task.filename;
+      codeTextarea.value = task.starterCode || "";
+
+      if (task.page) {
+        taskPageBadge.textContent = `صـ ${task.page}`;
+        taskPageBadge.classList.remove("hidden");
+      } else {
+        taskPageBadge.classList.add("hidden");
+      }
+
+      if (isExercise) {
+        const isProj = task.category === "project";
+        taskTypeBadge.textContent = isProj ? "مشروع مطلوب" : "تقويم مطلوب";
+        taskTypeBadge.className = isProj 
+          ? "px-2 py-0.5 rounded text-[10px] font-bold bg-purple-500/20 text-purple-400 border border-purple-500/40 shrink-0"
+          : "px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/40 shrink-0";
+        submitAnswerBtn.classList.remove("hidden");
+        submitAnswerBtn.classList.add("flex");
+      } else {
+        taskTypeBadge.textContent = task.page ? "كتاب الوزارة" : "ملف بايثون";
+        taskTypeBadge.className = "px-2 py-0.5 rounded text-[10px] font-bold bg-[#3574f0]/20 text-[#3574f0] border border-[#3574f0]/40 shrink-0";
+        submitAnswerBtn.classList.add("hidden");
+        submitAnswerBtn.classList.remove("flex");
+      }
+
+      updateLineNumbers();
+      renderProjectFiles();
+      closeSidebar();
+    }
+
+    async function publishAssessment() {
+      const actType = teacherActivityTypeSelect.value; // 'assessment' or 'project'
+      const targetClass = teacherTargetClassSelect ? teacherTargetClassSelect.value : "all";
+      const title = teacherTaskTitleInput.value.trim();
+
+      if (!title) {
+        showToast(actType === "project" ? "يرجى كتابة عنوان المشروع!" : "يرجى كتابة عنوان التقويم!");
+        teacherTaskTitleInput.focus();
+        return;
+      }
+
+      if (uploadedTeacherFiles.length === 0) {
+        showToast("يرجى رفع ملف بايثون (.py) الخاص بالنشاط أولاً!");
+        return;
+      }
+
+      const primaryFile = uploadedTeacherFiles[0];
+      const filename = primaryFile.name;
+      const code = primaryFile.code;
+      const desc = "اقرئي التعليمات والأسئلة الموضحة داخل الكود البرمجي وقومي بحلها.";
+
+      const taskObj = {
+        id: "task_" + Date.now(),
+        title: title,
+        filename: filename,
+        desc: desc,
+        targetClass: targetClass,
+        starterCode: code,
+        category: actType,
+        isAssessment: actType === "assessment",
+        isProject: actType === "project",
+        files: uploadedTeacherFiles.map(f => ({
+          filename: f.name,
+          title: title + " - " + f.name,
+          desc: desc,
+          starterCode: f.code,
+          category: actType,
+          isAssessment: actType === "assessment",
+          isProject: actType === "project"
+        })),
+        teacherId: activeTeacher.id,
+        createdAt: new Date().toISOString()
+      };
+
+      try {
+        const docName = `${activeTeacher.id}_${actType}`;
+        if (db) {
+          await db.collection("assessments").doc(docName).set(taskObj);
+        }
+        localStorage.setItem(`active_${actType}_` + activeTeacher.id, JSON.stringify(taskObj));
+
+        // تطبيق النشاط فوراً والتحقق من الفلترة
+        applyTeacherActivity(taskObj, actType);
+
+        const targetLabel = targetClass === "all" ? "جميع الفصول" : `فصل ${targetClass}`;
+        showToast(`🚀 تم نشر ${actType === "assessment" ? "التقويم" : "المشروع"} لـ (${targetLabel}) بنجاح!`);
+
+        // تفريغ النموذج بعد النشر
+        teacherTaskTitleInput.value = "";
+        uploadedTeacherFiles = [];
+        renderTeacherUploadedTags();
+        teacherUploadForm.classList.add("hidden");
+      } catch (err) {
+        console.error("Publish error:", err);
+        showToast("حدث خطأ أثناء النشر سحابياً!");
+      }
+    }
+
+    function isTaskVisibleForStudent(task) {
+      if (!task) return false;
+      const currentClass = studentClassSelect.value || localStorage.getItem("current_class_" + activeTeacher.id);
+      // إذا كان المستخدم هو المعلمة أو إذا كان النشاط موجهاً لجميع الفصول أو لفصل الطالبة نفسه
+      if (!currentClass || currentClass === "لوحة المعلمة" || !task.targetClass || task.targetClass === "all" || task.targetClass === currentClass) {
+        return true;
+      }
+      return false;
+    }
+
+    function applyTeacherActivity(taskObj, actType) {
+      if (actType === "assessment") {
+        if (isTaskVisibleForStudent(taskObj)) {
+          currentAssessmentTask = taskObj;
+          assessmentTabTitle.textContent = taskObj.title;
+          assessmentTab.classList.remove("hidden");
+          assessmentTab.classList.add("flex");
+          assessmentNewBadge.classList.remove("hidden");
+        } else {
+          currentAssessmentTask = null;
+          assessmentTab.classList.add("hidden");
+          assessmentTab.classList.remove("flex");
+        }
+      } else if (actType === "project") {
+        if (isTaskVisibleForStudent(taskObj)) {
+          currentProjectTask = taskObj;
+          projectTabTitle.textContent = taskObj.title;
+          projectTab.classList.remove("hidden");
+          projectTab.classList.add("flex");
+          projectNewBadge.classList.remove("hidden");
+        } else {
+          currentProjectTask = null;
+          projectTab.classList.add("hidden");
+          projectTab.classList.remove("flex");
+        }
+      }
+    }
+
+    function listenForTeacherActivities() {
+      // 1. استرجاع التقويم من التخزين المحلي
+      const localAss = localStorage.getItem("active_assessment_" + activeTeacher.id);
+      if (localAss) {
+        try {
+          const parsed = JSON.parse(localAss);
+          applyTeacherActivity(parsed, "assessment");
+        } catch (e) {}
+      }
+
+      // 2. استرجاع المشروع من التخزين المحلي
+      const localProj = localStorage.getItem("active_project_" + activeTeacher.id);
+      if (localProj) {
+        try {
+          const parsed = JSON.parse(localProj);
+          applyTeacherActivity(parsed, "project");
+        } catch (e) {}
+      }
+
+      if (db) {
+        // استماع سحابي للتقويم
+        db.collection("assessments").doc(activeTeacher.id + "_assessment").onSnapshot(doc => {
+          if (doc.exists) {
+            applyTeacherActivity(doc.data(), "assessment");
+          }
+        });
+
+        // استماع سحابي للمشروع
+        db.collection("assessments").doc(activeTeacher.id + "_project").onSnapshot(doc => {
+          if (doc.exists) {
+            applyTeacherActivity(doc.data(), "project");
+          }
+        });
+      }
+    }
+
+    function setupLineNumbersAndCaret() {
+      codeTextarea.addEventListener("input", updateLineNumbers);
+      codeTextarea.addEventListener("scroll", () => {
+        lineNumbers.scrollTop = codeTextarea.scrollTop;
+      });
+
+      const updateCaret = () => {
+        const pos = codeTextarea.selectionStart;
+        const lines = codeTextarea.value.substr(0, pos).split("\n");
+        const line = lines.length;
+        const col = lines[lines.length - 1].length + 1;
+        caretPosition.textContent = `Line: ${line}, Col: ${col}`;
+      };
+      codeTextarea.addEventListener("keyup", updateCaret);
+      codeTextarea.addEventListener("click", updateCaret);
+    }
+
+    function updateLineNumbers() {
+      const count = codeTextarea.value.split("\n").length;
+      let nums = "";
+      for (let i = 1; i <= count; i++) {
+        nums += i + "\n";
+      }
+      lineNumbers.textContent = nums;
+    }
+
+    function setupEventListeners() {
+      if (runPythonBtn) runPythonBtn.addEventListener("click", executePythonCode);
+      if (downloadCodeBtn) downloadCodeBtn.addEventListener("click", downloadPythonFile);
+
+      // إنشاء ملف جديد
+      if (newFileBtn) newFileBtn.addEventListener("click", openNewFileDialog);
+      if (sidebarNewFileBtn) sidebarNewFileBtn.addEventListener("click", openNewFileDialog);
+      if (confirmCreateFileBtn) confirmCreateFileBtn.addEventListener("click", createNewFile);
+      if (cancelNewFileBtn) cancelNewFileBtn.addEventListener("click", closeNewFileDialog);
+      if (closeNewFileModalBtn) closeNewFileModalBtn.addEventListener("click", closeNewFileDialog);
+      if (newFileNameInput) {
+        newFileNameInput.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") createNewFile();
+        });
+      }
+
+      // تبويبات المحرر العلوية
+      if (activeEditorTab) {
+        activeEditorTab.addEventListener("click", () => {
+          if ((currentTask.isAssessment && currentAssessmentTask) || (currentTask.isProject && currentProjectTask)) {
+            loadTask(BLANK_START_TASK, false);
+          }
+        });
+      }
+
+      if (assessmentTab) {
+        assessmentTab.addEventListener("click", () => {
+          if (currentAssessmentTask) {
+            loadTask(currentAssessmentTask, true);
+          } else {
+            openSidebarWithTab("assessment");
+          }
+        });
+      }
+
+      if (projectTab) {
+        projectTab.addEventListener("click", () => {
+          if (currentProjectTask) {
+            loadTask(currentProjectTask, true);
+          } else {
+            openSidebarWithTab("project");
+          }
+        });
+      }
+
+      if (toggleTeacherUploadFormBtn) {
+        toggleTeacherUploadFormBtn.addEventListener("click", () => {
+          if (teacherUploadForm) teacherUploadForm.classList.toggle("hidden");
+        });
+      }
+
+      if (toggleWorksheetsControlBtn) {
+        toggleWorksheetsControlBtn.addEventListener("click", () => {
+          if (worksheetsControlPanel) {
+            worksheetsControlPanel.classList.toggle("hidden");
+            if (!worksheetsControlPanel.classList.contains("hidden")) {
+              renderWorksheetsControlToggles();
+            }
+          }
+        });
+      }
+
+      if (closeWorksheetsControlBtn) {
+        closeWorksheetsControlBtn.addEventListener("click", () => {
+          if (worksheetsControlPanel) worksheetsControlPanel.classList.add("hidden");
+        });
+      }
+
+      if (enableAllWorksheetsBtn) {
+        enableAllWorksheetsBtn.addEventListener("click", () => {
+          hiddenWorksheetIds = [];
+          saveHiddenWorksheetsState();
+          showToast("👁️ تم تفعيل وإظهار جميع أوراق العمل للطالبات!");
+        });
+      }
+
+      if (disableAllWorksheetsBtn) {
+        disableAllWorksheetsBtn.addEventListener("click", () => {
+          hiddenWorksheetIds = WORKSHEETS_DATA.map(w => w.id);
+          saveHiddenWorksheetsState();
+          showToast("🚫 تم إخفاء جميع أوراق العمل عن الطالبات!");
+        });
+      }
+
+      if (closeTeacherUploadFormBtn) {
+        closeTeacherUploadFormBtn.addEventListener("click", () => {
+          if (teacherUploadForm) teacherUploadForm.classList.add("hidden");
+        });
+      }
+
+      // قراءة ملفات بايثون المتعددة التي ترفعها المعلمة
+      if (teacherPyFileInput) {
+        teacherPyFileInput.addEventListener("change", (e) => {
+          const files = Array.from(e.target.files);
+          if (files.length === 0) return;
+
+          let loadedCount = 0;
+          files.forEach(file => {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+              uploadedTeacherFiles.push({
+                name: file.name,
+                code: ev.target.result
+              });
+
+              loadedCount++;
+              if (loadedCount === files.length) {
+                renderTeacherUploadedTags();
+                showToast(`📁 تم رفع ${files.length} ملفات بنجاح!`);
+              }
+            };
+            reader.readAsText(file);
+          });
+        });
+      }
+
+      if (sendAssessmentToStudentsBtn) {
+        sendAssessmentToStudentsBtn.addEventListener("click", publishAssessment);
+      }
+
+      // تبديل نوع الدخول في شاشة الدخول البيضاء
+      if (loginTabStudent) {
+        loginTabStudent.addEventListener("click", () => {
+          loginTabStudent.className = "flex-1 py-1.5 rounded-lg bg-white text-[#3574f0] shadow-sm transition";
+          if (loginTabTeacher) loginTabTeacher.className = "flex-1 py-1.5 rounded-lg text-slate-500 hover:text-slate-800 transition";
+          if (studentLoginSection) studentLoginSection.classList.remove("hidden");
+          if (teacherLoginSection) teacherLoginSection.classList.add("hidden");
+        });
+      }
+
+      if (loginTabTeacher) {
+        loginTabTeacher.addEventListener("click", () => {
+          loginTabTeacher.className = "flex-1 py-1.5 rounded-lg bg-white text-emerald-600 shadow-sm transition";
+          if (loginTabStudent) loginTabStudent.className = "flex-1 py-1.5 rounded-lg text-slate-500 hover:text-slate-800 transition";
+          if (teacherLoginSection) teacherLoginSection.classList.remove("hidden");
+          if (studentLoginSection) studentLoginSection.classList.add("hidden");
+          if (modalTeacherPinInput) modalTeacherPinInput.focus();
+        });
+      }
+
+      // التحقق الصارم من دخول الطالبة: مطابقة كشف الفصل المعتمد فقط
+      if (confirmLoginBtn) {
+        confirmLoginBtn.addEventListener("click", () => {
+          const selClass = modalClassSelect ? modalClassSelect.value : "";
+          const selName = modalStudentSelect ? modalStudentSelect.value : "";
+          const approvedList = activeTeacher.students[selClass] || [];
+
+          if (!selName || !approvedList.includes(selName)) {
+            showToast("عفواً، الدخول متاح فقط للطالبات المسجلات في كشف الفصل المعتمد!");
+            return;
+          }
+
+          setStudentProfile(selName, selClass);
+          listenForTeacherActivities(); // تحديث فحص الأنشطة وفق الفصل المختار
+          if (loginModal) loginModal.classList.add("hidden");
+          showToast(`أهلاً بكِ يا ${selName} في مختبر بايثون! 🌸`);
+        });
+      }
+
+      // دخول المعلمة بكلمة المرور من شاشة البداية
+      if (confirmTeacherLoginBtn) {
+        confirmTeacherLoginBtn.addEventListener("click", verifyModalTeacherLogin);
+      }
+      if (modalTeacherPinInput) {
+        modalTeacherPinInput.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") verifyModalTeacherLogin();
+        });
+      }
+
+      function verifyModalTeacherLogin() {
+        const pin = modalTeacherPinInput ? modalTeacherPinInput.value.trim() : "";
+        if (pin === activeTeacher.pin) {
+          if (modalTeacherPinError) modalTeacherPinError.classList.add("hidden");
+          if (loginModal) loginModal.classList.add("hidden");
+          setStudentProfile("المعلمة (" + activeTeacher.name + ")", "لوحة المعلمة");
+          openTeacherModal();
+        } else {
+          if (modalTeacherPinError) modalTeacherPinError.classList.remove("hidden");
+        }
+      }
+
+      if (changeStudentBtn) {
+        changeStudentBtn.addEventListener("click", () => {
+          if (studentClassSelect && studentClassSelect.value && modalClassSelect) {
+            modalClassSelect.value = studentClassSelect.value;
+            updateModalStudentList();
+            if (studentNameInput && studentNameInput.value && modalStudentSelect) {
+              modalStudentSelect.value = studentNameInput.value;
+            }
+          }
+          if (loginModal) loginModal.classList.remove("hidden");
+        });
+      }
+
+      // زر تسجيل الخروج
+      if (logoutBtn) {
+        logoutBtn.addEventListener("click", performLogout);
+      }
+      if (teacherLogoutBtn) {
+        teacherLogoutBtn.addEventListener("click", () => {
+          if (teacherModal) teacherModal.classList.add("hidden");
+          performLogout();
+        });
+      }
+
+      function performLogout() {
+        localStorage.removeItem("current_student_" + activeTeacher.id);
+        localStorage.removeItem("current_class_" + activeTeacher.id);
+        if (studentNameInput) studentNameInput.value = "";
+        if (studentClassSelect) studentClassSelect.value = "";
+        if (headerStudentName) headerStudentName.textContent = "لم يتم الدخول";
+        if (headerStudentClass) headerStudentClass.textContent = "--";
+        
+        // إغلاق أي نوافذ مفتوحة
+        if (teacherModal) teacherModal.classList.add("hidden");
+        if (sidebarDrawer) sidebarDrawer.classList.add("hidden");
+        
+        // إعادة إظهار شاشة الدخول البيضاء
+        if (loginTabStudent) loginTabStudent.click();
+        if (loginModal) loginModal.classList.remove("hidden");
+        showToast("👋 تم تسجيل الخروج بنجاح!");
+      }
+
+      if (resetCodeBtn) {
+        resetCodeBtn.addEventListener("click", () => {
+          codeTextarea.value = currentTask.starterCode;
+          updateLineNumbers();
+          showToast("↺ تمت إعادة الكود الأصلي");
+        });
+      }
+      if (submitAnswerBtn) submitAnswerBtn.addEventListener("click", submitAnswerToTeacher);
+
+      if (clearTerminalBtn) {
+        clearTerminalBtn.addEventListener("click", () => {
+          terminalOutput.innerHTML = "";
+        });
+      }
+
+      // أزرار الرأس العلوي: أوراق العمل، تقويم، مشروع
+      if (openWorksheetsBtn) openWorksheetsBtn.addEventListener("click", () => openSidebarWithTab("worksheets"));
+      if (openAssessmentHeaderBtn) {
+        openAssessmentHeaderBtn.addEventListener("click", () => {
+          if (currentAssessmentTask) {
+            loadTask(currentAssessmentTask, true);
+          } else {
+            openSidebarWithTab("assessment");
+          }
+        });
+      }
+      if (openProjectHeaderBtn) {
+        openProjectHeaderBtn.addEventListener("click", () => {
+          if (currentProjectTask) {
+            loadTask(currentProjectTask, true);
+          } else {
+            openSidebarWithTab("project");
+          }
+        });
+      }
+
+      if (closeSidebarBtn) {
+        closeSidebarBtn.addEventListener("click", closeSidebar);
+      }
+      if (sidebarDrawer) {
+        sidebarDrawer.addEventListener("click", (e) => {
+          if (e.target === sidebarDrawer) closeSidebar();
+        });
+      }
+
+      if (tabBtnWorksheets) tabBtnWorksheets.addEventListener("click", () => renderDrawerList("worksheets"));
+      if (tabBtnAssessment) tabBtnAssessment.addEventListener("click", () => renderDrawerList("assessment"));
+      if (tabBtnProject) tabBtnProject.addEventListener("click", () => renderDrawerList("project"));
+
+      if (viewInstructionsMobileBtn) {
+        viewInstructionsMobileBtn.addEventListener("click", () => {
+          if (mobileInstructionsSheet) {
+            mobileInstructionsSheet.classList.toggle("hidden");
+            viewInstructionsMobileBtn.textContent = mobileInstructionsSheet.classList.contains("hidden") ? "المطلوب ▾" : "إخفاء ▴";
+          }
+        });
+      }
+
+      // لوحة المعلمة
+      if (secretLogoTrigger) secretLogoTrigger.addEventListener("click", openTeacherModal);
+      if (closeTeacherModalBtn) closeTeacherModalBtn.addEventListener("click", () => {
+        if (teacherModal) teacherModal.classList.add("hidden");
+      });
+      if (verifyPinBtn) verifyPinBtn.addEventListener("click", verifyTeacherPin);
+      if (teacherPinInput) {
+        teacherPinInput.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") verifyTeacherPin();
+        });
+      }
+
+      if (filterClassSelect) filterClassSelect.addEventListener("change", loadTeacherSubmissions);
+      if (refreshDataBtn) refreshDataBtn.addEventListener("click", loadTeacherSubmissions);
+
+      if (copyTeacherLinkBtn) {
+        copyTeacherLinkBtn.addEventListener("click", () => {
+          const link = `${window.location.origin}${window.location.pathname}?teacher=${activeTeacher.id}`;
+          const input = document.createElement("input");
+          input.value = link;
+          document.body.appendChild(input);
+          input.select();
+          document.execCommand("copy");
+          document.body.removeChild(input);
+          showToast("📋 تم نسخ الرابط الخاص بطالباتكِ بنجاح!");
+        });
+      }
+
+      if (exportExcelBtn) {
+        exportExcelBtn.addEventListener("click", () => {
+          const subs = getSubmissions();
+          let csv = "\uFEFFالطالبة,الفصل,النشاط,الوقت,الدرجة\n";
+          subs.forEach(s => {
+            csv += `"${s.studentName}","${s.studentClass}","${s.filename || s.taskTitle}","${s.timestamp}","${s.score || 'مكتمل'}"\n`;
+          });
+          const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+          const a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = `درجات_طالبات_${activeTeacher.name}.csv`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          showToast("📥 تم تصدير درجات الطالبات بنجاح!");
+        });
+      }
+    }
+
+    /* -------------------------------------------------------------
+       7. محرك بايثون (Pyodide) ودوال التشغيل والإدخال
+       ------------------------------------------------------------- */
+    async function initPyodideEngine() {
+      const badge = document.getElementById("pyodideStatusBadge");
+      try {
+        pyodideInstance = await loadPyodide({
+          stdout: (text) => appendToTerminal(text),
+          stderr: (text) => appendToTerminal(text, true)
+        });
+
+        // تعريف جسر الإدخال المباشر في كائن window العام
+        window.custom_input_bridge = async function(prompt) {
+          return new Promise((resolve) => {
+            if (prompt) appendToTerminal(prompt);
+            inlinePromptText.textContent = prompt || "> ";
+            inlineConsoleInput.value = "";
+            inlineInputRow.classList.remove("hidden");
+            inlineInputRow.classList.add("flex");
+            inlineConsoleInput.focus();
+
+            inputResolveFn = (val) => {
+              inlineInputRow.classList.add("hidden");
+              inlineInputRow.classList.remove("flex");
+              appendToTerminal(val);
+              resolve(val);
+            };
+          });
+        };
+
+        // إعداد دالة الإدخال المخصصة داخل بايثون
+        await pyodideInstance.runPythonAsync(`
+import js
+import builtins
+
+async def _async_input(prompt=""):
+    val = await js.custom_input_bridge(str(prompt))
+    return str(val)
+
+builtins.input = _async_input
+`);
+
+        badge.innerHTML = `
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+          <span class="text-emerald-400 font-bold">Python Ready</span>
+        `;
+      } catch (err) {
+        console.error("Pyodide loading error:", err);
+        badge.innerHTML = `
+          <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+          <span class="text-rose-400 font-bold">Python Error</span>
+        `;
+        appendToTerminal("فشل تحميل مفسر بايثون. يرجى التأكد من اتصال الإنترنت وتحديث الصفحة.", true);
+      }
+    }
+
+    inlineConsoleInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && inputResolveFn) {
+        const val = inlineConsoleInput.value;
+        const fn = inputResolveFn;
+        inputResolveFn = null;
+        fn(val);
+      }
+    });
+
+    inlineSubmitBtn.addEventListener("click", () => {
+      if (inputResolveFn) {
+        const val = inlineConsoleInput.value;
+        const fn = inputResolveFn;
+        inputResolveFn = null;
+        fn(val);
+      }
+    });
+
+    function transformInputCalls(code) {
+      return code.replace(/(?<![a-zA-Z0-9_.])input\s*\(/g, "await _async_input(");
+    }
+
+    async function executePythonCode() {
+      if (!pyodideInstance) {
+        showToast("جاري تجهيز محرك بايثون... يرجى الانتظار ثوانٍ قليلة.");
+        return;
+      }
+
+      const rawCode = codeTextarea.value;
+      terminalOutput.innerHTML = "";
+      appendToTerminal(`C:\\Users\\Student\\AppData\\Local\\Programs\\Python\\Python311\\python.exe ${currentTask.filename || 'main.py'}\n`);
+
+      runPythonBtn.disabled = true;
+      runPythonBtn.classList.add("opacity-50");
+
+      try {
+        const transformed = transformInputCalls(rawCode);
+        const wrappedCode = `
+import asyncio
+async def __pycharm_runner__():
+${transformed.split("\n").map(l => "    " + l).join("\n")}
+
+await __pycharm_runner__()
 `;
-function out(t,c){const d=document.createElement('span');if(c)d.className=c;d.textContent=t;const o=$('term');o.appendChild(d);o.scrollTop=o.scrollHeight}
-function nums(){const n=$('code').value.split('\n').length;$('gut').textContent=Array.from({length:n},(_,i)=>i+1).join('\n')}
-function persist(){try{localStorage.setItem('pylab_files',JSON.stringify(files))}catch(e){}}
-function save(){files[cur]=$('code').value;persist()}
-function show(n){save();cur=n;$('code').value=files[n]||'';$('fn').textContent=n;nums();drawFiles()}
-function drawFiles(){const f=$('files');f.innerHTML='';Object.keys(files).forEach(n=>{const d=document.createElement('div');d.className='file'+(n===cur?' on':'');d.textContent=n;const x=document.createElement('b');x.textContent='×';x.onclick=e=>{e.stopPropagation();if(Object.keys(files).length<2)return;delete files[n];if(cur===n)cur=Object.keys(files)[0];$('code').value=files[cur];$('fn').textContent=cur;nums();persist();drawFiles()};d.appendChild(x);d.onclick=()=>show(n);f.appendChild(d)})}
-function setTask(t){task={...DEF,...t};$('tt').textContent='المهمة: '+task.title+' ('+task.difficulty+')';$('desc').textContent=task.desc;const e=$('exp');if(task.expectedOutput&&task.expectedOutput.trim()){e.style.display='block';e.textContent='المخرجات المتوقعة:\n'+task.expectedOutput}else e.style.display='none';files={'main.py':task.starterCode||''};cur='main.py';$('code').value=files[cur];$('fn').textContent=cur;nums();drawFiles();$('fb').style.display='none'}
-async function init(){
-  try{
-    py=await loadPyodide();
-    const d1=new TextDecoder(),d2=new TextDecoder();
-    py.setStdout({isatty:true,write:b=>{wo(d1.decode(b,{stream:true}));return b.length}});
-    py.setStderr({isatty:true,write:b=>{wo(d2.decode(b,{stream:true}),'err');return b.length}});
-    py.runPython(PYSETUP);
-    $('dot').style.background='#10b981';$('stt').textContent='بايثون 3 جاهزة';
-    out('Python '+py.runPython('import sys;sys.version.split()[0]')+' جاهزة. اكتبي كودك ثم اضغطي تشغيل.\n','sys');
-  }catch(e){py=null;pyErr=String(e);$('dot').style.background='#f87171';$('stt').textContent='تعذر تحميل بايثون';out('تعذر تحميل محرك بايثون: '+e+'\nإن كان الاتصال محجوبًا في هذه الصفحة، افتحي الملف من جهازك مع اتصال بالإنترنت.\n','err')}
-}
-function sync(){try{py.FS.readdir('.').forEach(n=>{if(n[0]==='.'||n==='.'||n==='..')return;const st=py.FS.stat(n);if(py.FS.isFile(st.mode)){const c=py.FS.readFile(n,{encoding:'utf8'});if(!(n in files)||files[n]!==c){files[n]=c;if(n===cur)$('code').value=c}}});nums();persist();drawFiles()}catch(e){}}
-function wo(t,c){const s=sess;if(!s){out(t,c);return}
-  if(c==='err'){if(s.written>=s.shown)out(t,'err');return}
-  const st=s.written;s.written+=t.length;if(s.written<=s.shown)return;
-  const x=t.slice(Math.max(0,s.shown-st));out(x);s.shown+=x.length;cap.push(x)}
-function cancel(){if(!sess)return;sess=null;document.querySelectorAll('.tin').forEach(x=>x.remove());$('stop').style.display='none';out('^C\n','sys')}
-function run(cb){
-  if(!py){out(pyErr?'تعذر تحميل محرك بايثون في هذه الصفحة. حمّلي الملف وافتحيه من جهازك مع اتصال بالإنترنت.\n':'بايثون ما زالت تُحمَّل. انتظري حتى يظهر "بايثون 3 جاهزة" في الأعلى.\n','err');return false}
-  cancel();save();cap=[];$('term').textContent='';out('$ python '+cur+'\n','sys');
-  sess={mode:'run',answers:[],shown:0,written:0,snap:{...files},src:files[cur],fn:cur,seed:Math.floor(Math.random()*1e9),cb};
-  play();return true;
-}
-function play(){
-  const s=sess;s.written=0;let r=0;
-  try{const e=py.globals.get('env');
-    if(s.mode==='run'){
-      for(const n of py.FS.readdir('.')){if(n[0]!=='.'&&!(n in s.snap)){try{py.FS.unlink(n)}catch(x){}}}
-      for(const n in s.snap)py.FS.writeFile(n,s.snap[n]);
-      r=e.run(s.src,s.fn,py.toPy(s.answers),s.seed);
-    }else r=e.push(s.line,py.toPy(s.answers));
-  }catch(x){out(String(x)+'\n','err')}
-  if(r===2)waitIn();else fin(r);
-}
-function waitIn(){
-  $('stop').style.display='';
-  const i=document.createElement('input');i.className='tin';i.dir='auto';i.autocomplete='off';
-  $('term').appendChild(i);i.focus();$('term').scrollTop=$('term').scrollHeight;
-  i.onkeydown=ev=>{if(ev.key==='Enter'){const a=i.value;i.remove();out(a+'\n','inp');sess.shown+=a.length+1;cap.push(a+'\n');sess.answers.push(a);play()}};
-}
-function fin(r){
-  const s=sess;sess=null;$('stop').style.display='none';
-  if(s.mode==='run'){sync();more=false;$('ps').textContent='>>>';lastRun={code:s.src,out:cap.join(''),ok:null}}
-  else{more=r===1;$('ps').textContent=more?'...':'>>>'}
-  if(s.cb)s.cb();
-}
-function check(){
-  run(()=>{const f=$('fb');const got=cap.join('').replace(/\r/g,'').trim(),exp=(task.expectedOutput||'').replace(/\r/g,'').trim();
-  f.style.display='block';
-  if(!exp){f.className='ok';f.textContent='تم التشغيل. لا توجد مخرجات متوقعة لهذا السؤال، راجعي النتيجة في الطرفية.';return}
-  if(lastRun)lastRun.ok=(got===exp);
-  if(got===exp){f.className='ok';f.textContent='أحسنتِ! الحل صحيح ✅'}
-  else{f.className='no';f.textContent='المخرجات لا تطابق المتوقع بعد. قارني بين ما ظهر في الطرفية وما هو مطلوب.'}
-  })
-}
-$('run').onclick=()=>run();$('stop').onclick=cancel;$('chk').onclick=check;$('clr').onclick=()=>{$('term').textContent=''};
-$('rst').onclick=()=>{$('code').value=task.starterCode||'';save();nums();$('fb').style.display='none'};
-$('addf').onclick=()=>{const n=$('nf').value.trim();if(!n||/[\/\\]/.test(n)||n in files)return;save();files[n]='';$('nf').value='';show(n)};
-const ta=$('code');
-const SM=[['find','sub, start, end','يعيد موضع أول ظهور للنص أو -1 إن لم يوجد'],['rfind','sub','موضع آخر ظهور للنص أو -1'],['index','sub','مثل find لكن يرفع خطأ ValueError إن لم يجده'],['count','sub','عدد مرات ظهور النص داخل السلسلة'],['replace','old, new, count','استبدال نص بنص آخر ويعيد سلسلة جديدة'],['split','sep, maxsplit','تقسيم السلسلة إلى قائمة عند الفاصل'],['rsplit','sep, maxsplit','تقسيم من اليمين'],['splitlines','','تقسيم عند نهايات الأسطر'],['join','iterable','دمج عناصر قائمة بهذا النص كفاصل'],['strip','chars','حذف الفراغات من الطرفين'],['lstrip','chars','حذف الفراغات من البداية'],['rstrip','chars','حذف الفراغات من النهاية'],['upper','','تحويل كل الحروف إلى كبيرة'],['lower','','تحويل كل الحروف إلى صغيرة'],['title','','أول حرف من كل كلمة كبير'],['capitalize','','أول حرف فقط كبير'],['swapcase','','عكس حالة الحروف'],['casefold','','تحويل للحروف الصغيرة مناسب للمقارنة'],['startswith','prefix','هل تبدأ السلسلة بهذا النص؟ True أو False'],['endswith','suffix','هل تنتهي بهذا النص؟ True أو False'],['isdigit','','هل كل الحروف أرقام؟'],['isalpha','','هل كل الحروف أحرف؟'],['isalnum','','هل أحرف أو أرقام فقط؟'],['isspace','','هل كلها فراغات؟'],['isupper','','هل كل الحروف كبيرة؟'],['islower','','هل كل الحروف صغيرة؟'],['center','width, fillchar','توسيط النص في عرض محدد'],['ljust','width, fillchar','محاذاة لليسار بتعبئة'],['rjust','width, fillchar','محاذاة لليمين بتعبئة'],['zfill','width','تعبئة بأصفار من اليسار'],['format','*args','تنسيق النص باستخدام الأقواس {}'],['partition','sep','تقسيم إلى ثلاثة أجزاء: قبل والفاصل وبعد'],['removeprefix','prefix','حذف بداية معينة إن وجدت'],['removesuffix','suffix','حذف نهاية معينة إن وجدت'],['encode','encoding','تحويل النص إلى bytes']];
-const SR=['strip','lstrip','rstrip','lower','upper','title','capitalize','replace','join','format','center','ljust','rjust','zfill','swapcase','casefold','removeprefix','removesuffix'];
-let acI=[],acS=0,acP='';
-function acClose(){$('ac').style.display='none';acI=[]}
-function acDraw(){const b=$('ac');b.innerHTML='';acI.slice(0,40).forEach((x,i)=>{const d=document.createElement('div');d.className='ai'+(i===acS?' on':'');const n=document.createElement('b');n.textContent=x[0]+'('+x[1]+')';const s=document.createElement('span');s.textContent=x[2];d.append(n,s);d.onmousedown=e=>{e.preventDefault();acPick(i)};b.appendChild(d)});const o=b.querySelector('.on');if(o)o.scrollIntoView({block:'nearest'})}
-function acPick(i){const x=acI[i],p=ta.selectionStart,s=p-acP.length;ta.setRangeText(x[0]+'()',s,p,'end');if(x[1]){const c=s+x[0].length+1;ta.setSelectionRange(c,c)}acClose();nums();save();ta.focus()}
-function isStr(r,b){
-  if(r[0]==='"'||r[0]==="'")return true;
-  if(r===')'){const q=b.match(/(\w+)\([^()\n]*\)\.\w*$/);return !!q&&(q[1]==='input'||q[1]==='str'||SR.includes(q[1]))}
-  if(!/^[A-Za-z_]\w*$/.test(r))return false;
-  const a=ta.value.split('\n').some(l=>{const t=l.trim();if(!t.startsWith(r))return false;const z=t.slice(r.length).trim();if(z[0]!=='='||z[1]==='=')return false;const v=z.slice(1).trim();return /^[fFrR]?["']/.test(v)||v.startsWith('input(')||v.startsWith('str(')});
-  if(a)return true;
-  if(py){try{return py.runPython("isinstance(env.ns.get('"+r+"'),str)")}catch(e){}}
-  return false;
-}
-function ac(){
-  const p=ta.selectionStart,b=ta.value.slice(0,p);
-  const m=b.match(/(\w+|"[^"\n]*"|'[^'\n]*'|\))\.(\w*)$/);
-  if(!m||!isStr(m[1],b))return acClose();
-  acP=m[2];acI=SM.filter(x=>x[0].startsWith(acP));acS=0;
-  if(!acI.length||(acI.length===1&&acI[0][0]===acP))return acClose();
-  const ln=b.split('\n'),r=ln.length,e=$('ac');acDraw();e.style.display='block';
-  const w=ta.clientWidth+54;let left=54+ln[r-1].length*8.4-ta.scrollLeft;left=Math.max(54,Math.min(left,w-370));
-  let top=10+r*22-ta.scrollTop;const h=Math.min(230,acI.length*46);if(top+h>318)top=Math.max(0,top-22-h);
-  e.style.left=left+'px';e.style.top=top+'px';
-}
-ta.addEventListener('keydown',e=>{
-  if(!acI.length)return;
-  if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();e.stopImmediatePropagation();acS=(acS+(e.key==='ArrowDown'?1:acI.length-1))%acI.length;acDraw()}
-  else if((e.key==='Enter'||e.key==='Tab')&&!e.ctrlKey&&!e.metaKey){e.preventDefault();e.stopImmediatePropagation();acPick(acS)}
-  else if(e.key==='Escape')acClose();
-});
-ta.addEventListener('blur',()=>setTimeout(acClose,150));
-ta.addEventListener('input',()=>{nums();save();ac()});
-ta.addEventListener('scroll',()=>{$('gut').scrollTop=ta.scrollTop});
-ta.addEventListener('keydown',e=>{
-  if(e.key==='Tab'){e.preventDefault();ta.setRangeText('    ',ta.selectionStart,ta.selectionEnd,'end');nums()}
-  else if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();run()}
-  else if(e.key==='Enter'){const v=ta.value,p=ta.selectionStart,ls=v.lastIndexOf('\n',p-1)+1,line=v.slice(ls,p);let ind=line.match(/^\s*/)[0];if(/:\s*$/.test(line))ind+='    ';e.preventDefault();ta.setRangeText('\n'+ind,p,ta.selectionEnd,'end');nums()}
-});
-$('rin').addEventListener('keydown',e=>{
-  const i=$('rin');
-  if(e.key==='ArrowUp'&&hist.length){hi=Math.max(0,hi-1);i.value=hist[hi];e.preventDefault()}
-  else if(e.key==='ArrowDown'){hi=Math.min(hist.length,hi+1);i.value=hist[hi]||'';e.preventDefault()}
-  else if(e.key==='Enter'){
-    if(!py){out('بايثون لم تجهز بعد…\n','err');return}
-    if(sess)return;
-    const l=i.value;out($('ps').textContent+' '+l+'\n','pr');if(l.trim()){hist.push(l);hi=hist.length}
-    i.value='';sess={mode:'repl',line:l,answers:[],shown:0,written:0};play();
-  }
-});
-// teacher panel
-const enc=d=>btoa(unescape(encodeURIComponent(JSON.stringify(d)))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
-const dec=s=>{try{s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';return JSON.parse(decodeURIComponent(escape(atob(s))))}catch(e){return null}};
-function tData(){return{title:$('t1').value.trim()||'تحدي بايثون',difficulty:$('t2').value,desc:$('t3').value.trim(),starterCode:$('t4').value,expectedOutput:$('t5').value.trim()}}
-function tLink(){$('t6').value=location.href.split('#')[0]+'#'+enc(tData())}
-$('tBtn').onclick=()=>{$('t1').value=task.title;$('t2').value=task.difficulty;$('t3').value=task.desc;$('t4').value=task.starterCode;$('t5').value=task.expectedOutput||'';tLink();$('tm').classList.add('on')};
-['t1','t2','t3','t4','t5'].forEach(i=>$(i).addEventListener('input',tLink));
-$('t9').onclick=()=>$('tm').classList.remove('on');
-$('t7').onclick=()=>{setTask(tData());$('tm').classList.remove('on');out('# تم تطبيق السؤال الجديد.\n','sys')};
-$('t8').onclick=()=>{$('t6').select();try{document.execCommand('copy')}catch(e){}$('t8').textContent='تم النسخ ✓';setTimeout(()=>$('t8').textContent='نسخ الرابط',2000)};
-$('tm').addEventListener('click',e=>{if(e.target===$('tm'))$('tm').classList.remove('on')});
-function fromHash(){const h=location.hash.slice(1);const d=h&&dec(h);setTask(d||DEF)}
-window.addEventListener('hashchange',fromHash);
-function tkey(){let h=5381;const s=task.title+'|'+task.desc;for(const c of s)h=((h<<5)+h+c.charCodeAt(0))|0;return Math.abs(h).toString(36)}
-function subMsg(t,bad){const s=$('subst');s.textContent=t;s.style.color=bad?'var(--er)':'var(--ac)';setTimeout(()=>{s.textContent=''},6000)}
-function drawMe(){$('pBtn').textContent=me?'👤 '+me.name+' — '+me.cls:'👤 سجّلي اسمك'}
-function loadMe(){try{const v=JSON.parse(localStorage.getItem('pylab_me')||'null');if(v&&v.name&&v.cls)me=v}catch(e){}drawMe();if(!me)$('pm').classList.add('on')}
-$('pBtn').onclick=()=>{if(me){$('pnm').value=me.name;$('pcl').value=me.cls}$('pm').classList.add('on')};
-$('psv').onclick=()=>{const n=$('pnm').value.trim();if(!n){$('pnm').focus();return}me={name:n.slice(0,60),cls:$('pcl').value};try{localStorage.setItem('pylab_me',JSON.stringify(me))}catch(e){}drawMe();$('pm').classList.remove('on')};
-async function submit(){
-  if(!me){$('pm').classList.add('on');return}
-  save();const same=lastRun&&lastRun.code===files[cur];
-  const e={title:task.title,code:(files[cur]||'').slice(0,20000),out:same?lastRun.out.slice(0,5000):'',ok:same?lastRun.ok:null,at:new Date().toISOString()};
-  if(fb){
-    try{const id=(me.cls+'_'+me.name+'_'+tkey()).replace(/[^A-Za-z0-9\u0600-\u06FF]+/g,'_').slice(0,140);
-      await fb.db.collection('submissions').doc(id).set({name:me.name,cls:me.cls,...e});subMsg('تم تسليم إجابتك للمعلمة ✅'+(same?'':' (لم تُشغَّل بعد)'))}
-    catch(x){subMsg('تعذر التسليم: '+(x&&x.message||x),true)}
-    return;
-  }
-  if(db&&uid){
-    try{const r=db.doc('submissions/'+uid);const d=await r.get();const o=d.exists?d.data():{};
-      await r.set({...o,name:me.name,cls:me.cls,['t_'+tkey()]:e});subMsg('تم تسليم إجابتك للمعلمة ✅'+(same?'':' (لم تُشغَّل بعد، شغّليها لتصل المخرجات)'))}
-    catch(x){subMsg('تعذر التسليم: '+(x&&x.message||x),true)}
-  }else{
-    const t=['الاسم: '+me.name,'الصف: '+me.cls,'السؤال: '+task.title,'','الكود:',e.code,'','المخرجات:',e.out].join('\n');
-    try{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove();subMsg('التسليم المباشر غير متاح هنا. نُسخت إجابتك، أرسليها للمعلمة.',true)}catch(x){subMsg('التسليم غير متاح هنا',true)}
-  }
-}
-$('sub').onclick=submit;
-function drawSubs(){const L=$('sl'),c=$('sf').value;L.innerHTML='';
-  const a=subs.filter(x=>!c||x.cls===c).sort((x,y)=>(y.at||'').localeCompare(x.at||''));
-  $('sc').textContent=a.length+' تسليم';
-  if(!a.length){L.textContent='لا توجد تسليمات بعد.';return}
-  a.forEach(x=>{const d=document.createElement('div');d.className='sub';const h=document.createElement('div');h.className='sh';
-    const t=x.ok===true?'✅ صحيح':x.ok===false?'❌ غير مطابق':'— لم يُتحقق';
-    h.textContent=x.name+' · '+x.cls+' · '+x.title+' · '+t+' · '+new Date(x.at).toLocaleString('ar');
-    const b=document.createElement('div');b.style.display='none';
-    const p1=document.createElement('pre');p1.textContent=x.code||'';
-    const p2=document.createElement('pre');p2.textContent='المخرجات:\n'+(x.out||'(لا توجد)');
-    b.append(p1,p2);h.onclick=()=>{b.style.display=b.style.display==='none'?'block':'none'};d.append(h,b);L.appendChild(d)})}
-function fbSubs(){
-  if(!fb.auth.currentUser){$('lm').classList.add('on');return}
-  const cl=TEACHERS[(fb.auth.currentUser.email||'').toLowerCase()]||[];
-  $('sm').classList.add('on');if(unsub)unsub();
-  if(!cl.length){$('sl').textContent='هذا الحساب غير مرتبط بأي صف.';return}
-  $('sf').innerHTML='<option value="">كل صفوفي</option>'+cl.map(c=>'<option>'+c+'</option>').join('');
-  unsub=fb.db.collection('submissions').where('cls','in',cl).limit(500).onSnapshot(s=>{subs=s.docs.map(d=>d.data());drawSubs()},()=>{$('sl').textContent='تعذر قراءة التسليمات. تأكدي من دخول المعلمة وقواعد Firestore.'})}
-$('lgo').onclick=async()=>{try{$('lerr').textContent='';await fb.auth.signInWithEmailAndPassword($('lem').value.trim(),$('lpw').value);$('lpw').value='';$('lm').classList.remove('on');fbSubs()}catch(x){$('lerr').textContent='تعذر الدخول: '+(x.code||x.message)}};
-$('lcl').onclick=()=>$('lm').classList.remove('on');
-$('sBtn').onclick=()=>{if(fb){fbSubs();return}$('sm').classList.add('on');if(unsub)unsub();
-  if(!db){$('sl').textContent='قاعدة البيانات غير متاحة.';return}
-  unsub=db.collection('submissions').onSnapshot(s=>{subs=[];s.docs.forEach(d=>{const v=d.data()||{};Object.keys(v).forEach(k=>{if(k.indexOf('t_')===0&&v[k])subs.push({...v[k],name:v.name,cls:v.cls})})});drawSubs()},()=>{$('sl').textContent='تعذر قراءة التسليمات.'})};
-$('sf').onchange=drawSubs;
-$('sx').onclick=()=>{$('sm').classList.remove('on');if(unsub){unsub();unsub=null}};
-async function initCloud(){try{if(!(window.claude&&claude.use))return;usr=await claude.use('user');db=await claude.use('db');
-  if(usr){uid=await usr.id();if(await usr.canEdit()){$('sBtn').style.display='';if(!me)$('pm').classList.remove('on')}}}catch(e){}}
-fromHash();init();loadMe();if(initFb()){$('sBtn').style.display='';$('sBtn').textContent='🔐 دخول المعلمة';}else initCloud();
-</script>
+        await pyodideInstance.runPythonAsync(wrappedCode);
+        appendToTerminal("\nProcess finished with exit code 0");
+      } catch (err) {
+        appendToTerminal("\n" + err.toString(), true);
+        appendToTerminal("\nProcess finished with exit code 1", true);
+      } finally {
+        runPythonBtn.disabled = false;
+        runPythonBtn.classList.remove("opacity-50");
+      }
+    }
+
+    function appendToTerminal(text, isError = false) {
+      const span = document.createElement("span");
+      if (isError) {
+        span.className = "text-rose-400";
+      }
+      span.textContent = text + "\n";
+      terminalOutput.appendChild(span);
+      const container = document.getElementById("consoleContainer");
+      container.scrollTop = container.scrollHeight;
+    }
+
+    /* -------------------------------------------------------------
+       8. إدارة الملفات وتنزيل الكود (.py)
+       ------------------------------------------------------------- */
+    function downloadPythonFile() {
+      const code = codeTextarea.value;
+      const studentName = studentNameInput.value.trim() || "طالبة";
+      const baseName = (currentTask.filename || "main.py").replace(/\.py$/, "");
+      const fileName = `${baseName}_${studentName.replace(/\s+/g, "_")}.py`;
+
+      const blob = new Blob([code], { type: "text/x-python;charset=utf-8" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      showToast(`💾 تم تنزيل الملف باسم: ${fileName}`);
+    }
+
+    function openNewFileDialog() {
+      newFileNameInput.value = "";
+      newFileModal.classList.remove("hidden");
+      newFileNameInput.focus();
+    }
+
+    function closeNewFileDialog() {
+      newFileModal.classList.add("hidden");
+    }
+
+    function createNewFile() {
+      let name = newFileNameInput.value.trim();
+      if (!name) name = "untitled";
+      name = name.replace(/\.py$/, "") + ".py";
+
+      const newFileObj = {
+        id: "custom_" + Date.now(),
+        title: name,
+        filename: name,
+        page: null,
+        desc: "ملف برمجي مخصص أنشأته الطالبة.",
+        starterCode: `# ${name}\n\n`
+      };
+
+      customUserFiles.push(newFileObj);
+      closeNewFileDialog();
+      loadTask(newFileObj, false);
+      showToast(`📄 تم إنشاء ملف ${name} بنجاح!`);
+    }
+
+    /* -------------------------------------------------------------
+       9. تسليم الحلول السحابية ولوحة المعلمة
+       ------------------------------------------------------------- */
+    async function submitAnswerToTeacher() {
+      const sName = studentNameInput.value.trim();
+      const sClass = studentClassSelect.value;
+      const code = codeTextarea.value.trim();
+
+      if (!sName) {
+        showToast("يرجى اختيار أو كتابة اسم الطالبة أولاً!");
+        studentNameInput.focus();
+        return;
+      }
+
+      if (!code) {
+        showToast("لا يوجد كود لإرساله!");
+        return;
+      }
+
+      const submissionData = {
+        teacherId: activeTeacher.id,
+        studentName: sName,
+        studentClass: sClass,
+        taskId: currentTask.id || "task",
+        taskTitle: currentTask.title || "نشاط",
+        filename: currentTask.filename || "code.py",
+        code: code,
+        score: "مكتمل",
+        timestamp: new Date().toLocaleString("ar-KW")
+      };
+
+      submitAnswerBtn.disabled = true;
+      submitAnswerBtn.classList.add("opacity-50");
+
+      try {
+        if (db) {
+          await db.collection("submissions").add(submissionData);
+        }
+        saveSubmissionLocally(submissionData);
+        showToast(`💌 تم إرسال الحل بنجاح لمعلمتكِ ${activeTeacher.name}!`);
+      } catch (err) {
+        console.error("Submission error:", err);
+        saveSubmissionLocally(submissionData);
+        showToast("تم حفظ الحل محلياً (حدث خطأ في الاتصال بالسحابة).");
+      } finally {
+        submitAnswerBtn.disabled = false;
+        submitAnswerBtn.classList.remove("opacity-50");
+      }
+    }
+
+    function saveSubmissionLocally(sub) {
+      const all = getSubmissions();
+      all.unshift(sub);
+      localStorage.setItem("submissions_" + activeTeacher.id, JSON.stringify(all));
+    }
+
+    function getSubmissions() {
+      try {
+        const raw = localStorage.getItem("submissions_" + activeTeacher.id);
+        return raw ? JSON.parse(raw) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function openTeacherModal() {
+      teacherModal.classList.remove("hidden");
+      teacherPinInput.value = "";
+      pinErrorMsg.classList.add("hidden");
+      pinEntryView.classList.remove("hidden");
+      teacherDashboardView.classList.add("hidden");
+      teacherPinInput.focus();
+    }
+
+    function verifyTeacherPin() {
+      const pin = teacherPinInput.value.trim();
+      if (pin === activeTeacher.pin) {
+        pinEntryView.classList.add("hidden");
+        teacherDashboardView.classList.remove("hidden");
+        loadTeacherSubmissions();
+      } else {
+        pinErrorMsg.classList.remove("hidden");
+      }
+    }
+
+    async function loadTeacherSubmissions() {
+      submissionsTableBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400">جاري تحميل الحلول...</td></tr>`;
+      const selectedClass = filterClassSelect.value;
+      let submissions = [];
+
+      try {
+        if (db) {
+          let query = db.collection("submissions").where("teacherId", "==", activeTeacher.id);
+          if (selectedClass !== "all") {
+            query = query.where("studentClass", "==", selectedClass);
+          }
+          const snapshot = await query.get();
+          snapshot.forEach(doc => submissions.push({ id: doc.id, ...doc.data() }));
+        }
+      } catch (err) {
+        console.warn("Using local submissions:", err);
+      }
+
+      if (submissions.length === 0) {
+        submissions = getSubmissions().filter(s => selectedClass === "all" || s.studentClass === selectedClass);
+      }
+
+      if (submissions.length === 0) {
+        submissionsTableBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-500">لا توجد إجابات مرسلة حتى الآن.</td></tr>`;
+        return;
+      }
+
+      submissionsTableBody.innerHTML = "";
+      submissions.forEach(sub => {
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-[#26282b] transition";
+        tr.innerHTML = `
+          <td class="p-2 font-bold text-white">${sub.studentName}</td>
+          <td class="p-2">${sub.studentClass}</td>
+          <td class="p-2 font-mono text-[#3574f0]">${sub.filename || sub.taskTitle}</td>
+          <td class="p-2 text-slate-400 text-[11px]">${sub.timestamp}</td>
+          <td class="p-2 text-center text-emerald-400 font-bold">${sub.score || 'مكتمل'}</td>
+          <td class="p-2 text-center">
+            <button class="px-2 py-1 bg-[#1e1f22] hover:bg-[#3574f0] text-white rounded text-[11px] border pc-border view-code-btn">
+              عرض الكود 💻
+            </button>
+          </td>
+        `;
+
+        tr.querySelector(".view-code-btn").addEventListener("click", () => {
+          teacherModal.classList.add("hidden");
+          codeTextarea.value = sub.code;
+          tabFilename.textContent = `${sub.studentName}.py`;
+          currentFileDropdownName.textContent = `${sub.studentName}.py`;
+          updateLineNumbers();
+          showToast(`تم فتح كود الطالبة: ${sub.studentName}`);
+        });
+
+        submissionsTableBody.appendChild(tr);
+      });
+    }
+
+    /* -------------------------------------------------------------
+       10. القائمة الجانبية (Drawer) لاختيار الأنشطة
+       ------------------------------------------------------------- */
+    function openSidebarWithTab(tabName) {
+      sidebarDrawer.classList.remove("hidden");
+      renderDrawerList(tabName);
+    }
+
+    function closeSidebar() {
+      sidebarDrawer.classList.add("hidden");
+    }
+
+    function renderDrawerList(type) {
+      currentViewMode = type;
+      drawerListContainer.innerHTML = "";
+
+      [tabBtnWorksheets, tabBtnAssessment, tabBtnProject].forEach(btn => {
+        btn.className = "flex-1 py-2 font-bold text-slate-400 hover:text-white";
+      });
+
+      let items = [];
+      if (type === "worksheets") {
+        tabBtnWorksheets.className = "flex-1 py-2 font-bold text-[#3574f0] border-b-2 border-[#3574f0]";
+        // عرض أوراق العمل المفعلة فقط التي حددتها المعلمة
+        items = WORKSHEETS_DATA.filter(ws => !hiddenWorksheetIds.includes(ws.id));
+      } else if (type === "assessment") {
+        tabBtnAssessment.className = "flex-1 py-2 font-bold text-amber-500 border-b-2 border-amber-500";
+        if (currentAssessmentTask) {
+          items = [currentAssessmentTask];
+        }
+      } else if (type === "project") {
+        tabBtnProject.className = "flex-1 py-2 font-bold text-purple-500 border-b-2 border-purple-500";
+        if (currentProjectTask) {
+          items = [currentProjectTask];
+        }
+      }
+
+      if (items.length === 0) {
+        const emptyMsg = type === "assessment" 
+          ? "لم تقم المعلمة بنشر أي تقويم حتى الآن."
+          : (type === "project" 
+              ? "لم تقم المعلمة بنشر أي مشروع حتى الآن." 
+              : "لم تقم المعلمة بإتاحة أي ورقة عمل حالياً.");
+        drawerListContainer.innerHTML = `<div class="p-6 text-center text-slate-400 text-xs leading-relaxed">${emptyMsg}</div>`;
+        return;
+      }
+
+      items.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "p-2.5 rounded-lg bg-[#1e1f22] border pc-border hover:border-[#3574f0] cursor-pointer transition flex flex-col gap-1";
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-white text-xs">${item.title}</span>
+            ${item.page ? `<span class="text-amber-400 font-mono text-[11px]">صـ ${item.page}</span>` : ''}
+          </div>
+          <p class="text-slate-400 text-[11px] line-clamp-2 leading-relaxed">${item.desc}</p>
+          <div class="flex items-center justify-between pt-1 text-[10px] text-slate-500 font-mono">
+            <span>🐍 ${item.filename}</span>
+            <span class="text-[#3574f0] font-bold">فتح النشاط ←</span>
+          </div>
+        `;
+        card.addEventListener("click", () => {
+          loadTask(item, type !== "worksheets");
+        });
+        drawerListContainer.appendChild(card);
+      });
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById("toastNotification");
+      t.textContent = msg;
+      t.classList.remove("hidden");
+      setTimeout(() => t.classList.add("hidden"), 3000);
+    }
+  </script>
+
 </body>
 </html>
