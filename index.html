@@ -100,10 +100,10 @@
 
       <span class="text-slate-600 hidden lg:inline">|</span>
 
-      <!-- زر لوحة المعلمة السريع -->
-      <div id="secretLogoTrigger" class="cursor-pointer bg-black/40 hover:bg-[#3574f0]/20 px-2 py-1 rounded border pc-border hover:border-[#3574f0] transition flex items-center gap-1.5" title="لوحة المعلمة">
+      <!-- زر لوحة المعلمة يظهر فقط إذا دخلت المعلمة عبر رابطها السري (?role=teacher) -->
+      <div id="secretLogoTrigger" class="cursor-pointer bg-black/40 hover:bg-[#3574f0]/20 px-2 py-1 rounded border pc-border hover:border-[#3574f0] transition hidden items-center gap-1.5" title="لوحة المعلمة">
         <span class="text-[10px] font-black text-[#21d789] bg-black px-1 rounded">PC</span>
-        <span class="text-[11px] text-slate-300 font-bold hidden sm:inline">لوحة المعلمة 🔒</span>
+        <span class="text-[11px] text-slate-300 font-bold">لوحة المعلمة 🔒</span>
       </div>
     </div>
 
@@ -264,153 +264,28 @@
         <!-- رأس نافذة التشغيل -->
         <div class="px-3 py-1 border-b pc-border flex items-center justify-between text-xs pc-bg-panel text-[#bcbec4] shrink-0">
           <div class="flex items-center gap-2">
-            <span class="flex items-center gap-1 font-bold text-white border-b-2 border-[#3574f0] pb-0.5">
-              <span>▶</span>
-              <span id="runTabTitle">Run Terminal</span>
-            </span>
-          </div>
-
-          <div class="flex items-center gap-2">
-            <span id="pyodideStatusBadge" class="text-[10px] sm:text-[11px] font-bold text-amber-400 flex items-center gap-1">
-              <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
-              <span>Python Loading...</span>
-            </span>
-            <button id="clearTerminalBtn" class="text-slate-400 hover:text-white px-1.5 py-0.5 rounded" title="مسح المخرجات">
-              🗑️
+            <button id="copyTeacherSecretLinkBtn" class="px-2.5 py-1 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded text-xs font-bold shadow flex items-center gap-1" title="نسخ الرابط السري الخاص بالمعلمة">
+              🔗 نسخ رابط المعلمة السري
             </button>
-          </div>
-        </div>
-
-        <!-- شاشة الكونسول المكتوبة بالخط المطابق لـ PyCharm -->
-        <div class="flex-1 p-2 sm:p-2.5 code-font text-xs sm:text-sm text-[#bcbec4] overflow-y-auto whitespace-pre-wrap leading-relaxed select-text font-mono flex flex-col cursor-text pc-bg-dark" id="consoleContainer">
-          <div id="terminalOutput">C:\Users\Student\AppData\Local\Programs\Python\Python311\python.exe main.py</div>
-          
-          <!-- سطر الإدخال المباشر لـ input() داخل الـ Terminal -->
-          <div id="inlineInputRow" class="hidden items-center text-emerald-400 font-mono mt-1 flex-wrap gap-1 pc-bg-subtle p-1.5 rounded border border-emerald-500/40">
-            <span id="inlinePromptText" class="text-white select-none whitespace-pre text-xs"></span>
-            <div class="flex-1 flex items-center min-w-[140px]">
-              <input type="text" id="inlineConsoleInput" autocomplete="off" spellcheck="false" placeholder="اكتبي القيمة واضغطي Enter..." class="flex-1 bg-[#1e1f22] text-emerald-300 font-mono text-xs sm:text-sm focus:outline-none border border-emerald-500 px-2 py-0.5 rounded">
-              <button type="button" id="inlineSubmitBtn" class="ml-1 px-2.5 py-0.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded shrink-0">
-                ↵
-              </button>
-            </div>
-          </div>
-        </div>
-
-      </section>
-
-    </main>
-
-  </div>
-
-  <!-- ================= 5. شريط الحالة السفلي (Status Bar) ================= -->
-  <footer class="pc-bg-panel border-t pc-border px-3 py-0.5 flex items-center justify-between text-[11px] text-slate-400 font-mono shrink-0 h-6" dir="ltr">
-    <div class="flex items-center gap-3">
-      <span class="text-[#3574f0] font-bold">PyCharm</span>
-      <span id="caretPosition">Line: 1, Col: 1</span>
-    </div>
-    <div class="flex items-center gap-3">
-      <span>UTF-8</span>
-      <span>Python 3.11</span>
-      <span class="text-emerald-400">●</span>
-    </div>
-  </footer>
-
-  <!-- ================= 6. القائمة الجانبية المنبثقة لاختيار الأنشطة (Drawer) ================= -->
-  <div id="sidebarDrawer" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex justify-end hidden">
-    <div class="w-full max-w-md pc-bg-panel h-full border-l pc-border flex flex-col p-4 shadow-2xl" dir="rtl">
-      
-      <div class="flex items-center justify-between pb-3 border-b pc-border">
-        <h2 class="text-sm font-bold text-white flex items-center gap-2">
-          <span>📑</span>
-          <span>فهرس أوراق العمل وتدريبات المنهج</span>
-        </h2>
-        <button id="closeSidebarBtn" class="text-slate-400 hover:text-white text-base font-bold px-2 py-0.5 rounded hover:bg-[#393b40] transition" title="إغلاق">✕</button>
-      </div>
-
-      <!-- تبويبات الفهرس: أوراق العمل vs التقويم vs المشروع -->
-      <div class="flex border-b pc-border mt-3 text-xs">
-        <button id="tabBtnWorksheets" class="flex-1 py-2 font-bold text-[#3574f0] border-b-2 border-[#3574f0]">
-          📖 أوراق العمل
-        </button>
-        <button id="tabBtnAssessment" class="flex-1 py-2 font-bold text-slate-400 hover:text-white">
-          📝 تقويم
-        </button>
-        <button id="tabBtnProject" class="flex-1 py-2 font-bold text-slate-400 hover:text-white">
-          🚀 مشروع
-        </button>
-      </div>
-
-      <!-- قائمة العناصر -->
-      <div id="drawerListContainer" class="flex-1 overflow-y-auto py-3 space-y-2 text-xs">
-        <!-- Injected dynamically -->
-      </div>
-    </div>
-  </div>
-
-  <!-- ================= 7. نافذة لوحة المعلمة السحابية (Modal) ================= -->
-  <div id="teacherModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-3 sm:p-5 hidden">
-    <div class="w-full max-w-4xl pc-bg-panel border pc-border rounded-xl shadow-2xl flex flex-col max-h-[92vh] overflow-hidden" dir="rtl">
-      
-      <!-- رأس نافذة المعلمة -->
-      <div class="p-3 sm:p-4 border-b pc-border flex items-center justify-between">
-        <div class="flex items-center gap-2">
-          <span class="text-base sm:text-lg">🔒</span>
-          <div>
-            <h3 class="font-bold text-white text-xs sm:text-sm" id="modalTeacherName">لوحة المعلمة: أ. وفاء عليان</h3>
-            <p class="text-[10px] sm:text-xs text-slate-400">متابعة الحلول السحابية وتصدير الدرجات</p>
-          </div>
-        </div>
-        <div class="flex items-center gap-2">
-          <button id="teacherLogoutBtn" class="px-2.5 py-1 bg-rose-600/20 hover:bg-rose-600/40 text-rose-300 border border-rose-500/30 rounded text-xs font-bold transition flex items-center gap-1">
-            <span>🚪</span>
-            <span>تسجيل خروج</span>
-          </button>
-          <button id="closeTeacherModalBtn" class="text-slate-400 hover:text-white text-lg font-bold px-2">✕</button>
-        </div>
-      </div>
-
-      <!-- شاشة إدخال رمز PIN -->
-      <div id="pinEntryView" class="p-6 flex flex-col items-center justify-center space-y-3">
-        <p class="text-xs text-slate-300">أدخلي رمز المرور الخاص بحساب المعلمة:</p>
-        <div class="flex gap-2">
-          <input type="password" id="teacherPinInput" maxlength="6" placeholder="رمز PIN" class="bg-[#1e1f22] border pc-border px-3 py-1.5 rounded text-center text-white font-mono text-sm tracking-widest focus:outline-none focus:border-[#3574f0] w-32">
-          <button id="verifyPinBtn" class="px-4 py-1.5 bg-[#3574f0] hover:bg-[#2b61cd] text-white font-bold text-xs rounded transition">
-            دخول
-          </button>
-        </div>
-        <p id="pinErrorMsg" class="text-[11px] text-rose-400 hidden">رمز المرور غير صحيح!</p>
-      </div>
-
-      <!-- لوحة التحكم الكاملة بعد إدخال الرمز -->
-      <div id="teacherDashboardView" class="hidden flex-1 flex flex-col overflow-hidden p-3 sm:p-4">
-        
-        <!-- شريط أدوات المعلمة -->
-        <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b pc-border">
-          <div class="flex items-center gap-2 flex-wrap">
-            <span class="text-xs text-slate-300">تصفية حسب الفصل:</span>
-            <select id="filterClassSelect" class="bg-[#1e1f22] border pc-border px-2 py-1 rounded text-white text-xs">
-              <option value="all">جميع الفصول</option>
-            </select>
-            <button id="refreshDataBtn" class="px-2.5 py-1 bg-[#1e1f22] hover:bg-[#393b40] border pc-border rounded text-xs text-slate-200">
-              🔄 تحديث
-            </button>
-            <button id="toggleTeacherUploadFormBtn" class="px-2.5 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded text-xs font-bold shadow flex items-center gap-1">
-              <span>📤</span>
-              <span>نشر نشاط (تقويم أو مشروع)</span>
-            </button>
-            <button id="toggleWorksheetsControlBtn" class="px-2.5 py-1 bg-sky-700 hover:bg-sky-600 text-white rounded text-xs font-bold shadow flex items-center gap-1">
-              <span>⚙️</span>
-              <span>التحكم في ظهور أوراق العمل</span>
-            </button>
-          </div>
-
-          <div class="flex items-center gap-2">
             <button id="copyTeacherLinkBtn" class="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded text-xs font-bold shadow">
               📋 نسخ رابط طالباتي
             </button>
             <button id="exportExcelBtn" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-xs font-bold shadow">
               📊 تصدير Excel
+            </button>
+          </div>
+        </div>
+
+        <!-- بطاقة حالة النشاط المنشور حالياً للتأكيد -->
+        <div id="activePublishedStatusCard" class="bg-[#18191c] border border-emerald-500/30 p-2.5 rounded-lg my-2 text-xs flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+            <span class="font-bold text-white text-xs">حالة النشر الحالية:</span>
+            <span id="activePublishedText" class="text-emerald-400 font-semibold">جاري الفحص السحابي...</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <button id="deleteActivePublishBtn" class="px-2 py-0.5 bg-rose-900/40 hover:bg-rose-900/70 border border-rose-500/40 text-rose-300 rounded text-[10px] font-bold transition">
+              إلغاء نشر النشاط ✕
             </button>
           </div>
         </div>
@@ -478,6 +353,28 @@
               <span>🚀</span>
               <span>نشر وإرسال لطالباتي</span>
             </button>
+          </div>
+        </div>
+
+        <!-- نافذة تأكيد نجاح النشر المنبثقة -->
+        <div id="publishSuccessConfirmModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-[70] flex items-center justify-center p-4">
+          <div class="bg-[#26282b] border border-emerald-500/50 rounded-2xl p-5 max-w-md w-full shadow-2xl flex flex-col items-center text-center gap-3" dir="rtl">
+            <div class="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-2xl border border-emerald-500/40">
+              ✓
+            </div>
+            <h4 class="text-white font-bold text-base">تم نشر النشاط بنجاح والتأكد من وصوله!</h4>
+            <div class="bg-[#1e1f22] p-3 rounded-xl border pc-border w-full text-right text-xs space-y-1.5 text-slate-300">
+              <div class="flex justify-between"><span class="text-slate-400">العنوان:</span> <span id="confirmTaskTitle" class="font-bold text-white">--</span></div>
+              <div class="flex justify-between"><span class="text-slate-400">النوع:</span> <span id="confirmTaskType" class="text-amber-400 font-bold">--</span></div>
+              <div class="flex justify-between"><span class="text-slate-400">الفصل المستهدف:</span> <span id="confirmTargetClass" class="text-emerald-400 font-bold">--</span></div>
+              <div class="flex justify-between"><span class="text-slate-400">عدد الملفات:</span> <span id="confirmFilesCount" class="font-mono text-sky-400">--</span></div>
+            </div>
+            <p class="text-[11px] text-slate-400">أصبح النشاط الآن متاحاً فورياً في شاشات طالباتكِ وسيتلقين تنبيهاً مباشراً.</p>
+            <div class="flex gap-2 w-full pt-1">
+              <button id="closeConfirmModalBtn" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-xs transition">
+                ممتاز، إغلاق التأكيد ✓
+              </button>
+            </div>
           </div>
         </div>
 
@@ -1172,17 +1069,27 @@ while True:
     const filterClassSelect = document.getElementById("filterClassSelect");
     const refreshDataBtn = document.getElementById("refreshDataBtn");
     const copyTeacherLinkBtn = document.getElementById("copyTeacherLinkBtn");
+    const copyTeacherSecretLinkBtn = document.getElementById("copyTeacherSecretLinkBtn");
     const exportExcelBtn = document.getElementById("exportExcelBtn");
+
+    const activePublishedStatusCard = document.getElementById("activePublishedStatusCard");
+    const activePublishedText = document.getElementById("activePublishedText");
+    const deleteActivePublishBtn = document.getElementById("deleteActivePublishBtn");
+
+    const publishSuccessConfirmModal = document.getElementById("publishSuccessConfirmModal");
+    const confirmTaskTitle = document.getElementById("confirmTaskTitle");
+    const confirmTaskType = document.getElementById("confirmTaskType");
+    const confirmTargetClass = document.getElementById("confirmTargetClass");
+    const confirmFilesCount = document.getElementById("confirmFilesCount");
+    const closeConfirmModalBtn = document.getElementById("closeConfirmModalBtn");
 
     const teacherActivityTypeSelect = document.getElementById("teacherActivityTypeSelect");
     const teacherTargetClassSelect = document.getElementById("teacherTargetClassSelect");
-    const teacherTaskTitleInput = document.getElementById("teacherTaskTitleInput");
-    const teacherPyFileInput = document.getElementById("teacherPyFileInput");
-    const teacherUploadedFilesTags = document.getElementById("teacherUploadedFilesTags");
-    const sendAssessmentToStudentsBtn = document.getElementById("sendAssessmentToStudentsBtn");
-
-    const viewInstructionsMobileBtn = document.getElementById("viewInstructionsMobileBtn");
-    const mobileInstructionsSheet = document.getElementById("mobileInstructionsSheet");
+    // تحديد المعلمة من الرابط: ?teacher=wafaa
+    const urlParams = new URLSearchParams(window.location.search);
+    const teacherParam = urlParams.get("teacher") || "wafaa";
+    const isTeacherRole = urlParams.get("role") === "teacher" || urlParams.get("admin") === "true";
+    const activeTeacher = TEACHERS[teacherParam] || TEACHERS.wafaa;
 
     /* -------------------------------------------------------------
        6. الإعداد المبدئي للتطبيق
@@ -1194,6 +1101,22 @@ while True:
       }
       if (loginTeacherGreeting) {
         loginTeacherGreeting.textContent = `مرحباً بكِ في مختبر ${activeTeacher.name} لمادة تقنية المعلومات`;
+      }
+
+      // إخفاء تبويب وزر المعلمة عن الطالبات إلا عند فتح الرابط السري المخصص
+      if (secretLogoTrigger) {
+        if (isTeacherRole) {
+          secretLogoTrigger.classList.remove("hidden");
+          secretLogoTrigger.classList.add("flex");
+        } else {
+          secretLogoTrigger.classList.add("hidden");
+          secretLogoTrigger.classList.remove("flex");
+        }
+      }
+
+      // إذا لم يكن الرابط لمعلمة، يتم إخفاء خيار دخول المعلمة من شاشة الدخول البيضاء
+      if (!isTeacherRole && loginTabTeacher) {
+        loginTabTeacher.classList.add("hidden");
       }
     }
 
@@ -1512,9 +1435,17 @@ while True:
 
         // تطبيق النشاط فوراً والتحقق من الفلترة
         applyTeacherActivity(taskObj, actType);
+        updateActivePublishedStatus();
+
+        // إظهار نافذة التأكيد الرسمية للنشر
+        if (confirmTaskTitle) confirmTaskTitle.textContent = title;
+        if (confirmTaskType) confirmTaskType.textContent = actType === "assessment" ? "تقويم 📝" : "مشروع 🚀";
+        if (confirmTargetClass) confirmTargetClass.textContent = targetClass === "all" ? "جميع الفصول" : `فصل ${targetClass}`;
+        if (confirmFilesCount) confirmFilesCount.textContent = `${uploadedTeacherFiles.length} ملفات بايثون`;
+        if (publishSuccessConfirmModal) publishSuccessConfirmModal.classList.remove("hidden");
 
         const targetLabel = targetClass === "all" ? "جميع الفصول" : `فصل ${targetClass}`;
-        showToast(`🚀 تم نشر ${actType === "assessment" ? "التقويم" : "المشروع"} لـ (${targetLabel}) بنجاح!`);
+        showToast(`🚀 تم تأكيد نشر النشاط لـ (${targetLabel}) بنجاح!`);
 
         // تفريغ النموذج بعد النشر
         teacherTaskTitleInput.value = "";
@@ -1524,6 +1455,47 @@ while True:
       } catch (err) {
         console.error("Publish error:", err);
         showToast("حدث خطأ أثناء النشر سحابياً!");
+      }
+    }
+
+    function updateActivePublishedStatus() {
+      if (!activePublishedText) return;
+      let textParts = [];
+      if (currentAssessmentTask) {
+        const tgt = currentAssessmentTask.targetClass === "all" ? "الكل" : currentAssessmentTask.targetClass;
+        textParts.push(`📝 تقويم: "${currentAssessmentTask.title}" (${tgt})`);
+      }
+      if (currentProjectTask) {
+        const tgt = currentProjectTask.targetClass === "all" ? "الكل" : currentProjectTask.targetClass;
+        textParts.push(`🚀 مشروع: "${currentProjectTask.title}" (${tgt})`);
+      }
+
+      if (textParts.length > 0) {
+        activePublishedText.textContent = textParts.join(" | ");
+        if (deleteActivePublishBtn) deleteActivePublishBtn.classList.remove("hidden");
+      } else {
+        activePublishedText.textContent = "لا توجد أنشطة نشطة منشورة حالياً.";
+        if (deleteActivePublishBtn) deleteActivePublishBtn.classList.add("hidden");
+      }
+    }
+
+    async function removeActivePublishedActivities() {
+      try {
+        if (db) {
+          await db.collection("assessments").doc(activeTeacher.id + "_assessment").delete().catch(()=>{});
+          await db.collection("assessments").doc(activeTeacher.id + "_project").delete().catch(()=>{});
+        }
+        localStorage.removeItem("active_assessment_" + activeTeacher.id);
+        localStorage.removeItem("active_project_" + activeTeacher.id);
+        currentAssessmentTask = null;
+        currentProjectTask = null;
+        assessmentTab.classList.add("hidden");
+        projectTab.classList.add("hidden");
+        updateActivePublishedStatus();
+        renderProjectFiles();
+        showToast("🗑️ تم إلغاء نشر الأنشطة وحذفها عن الطالبات!");
+      } catch (e) {
+        showToast("تعذر إلغاء النشر!");
       }
     }
 
@@ -1596,9 +1568,13 @@ while True:
         db.collection("assessments").doc(activeTeacher.id + "_project").onSnapshot(doc => {
           if (doc.exists) {
             applyTeacherActivity(doc.data(), "project");
+          } else {
+            applyTeacherActivity(null, "project");
           }
+          updateActivePublishedStatus();
         });
       }
+      updateActivePublishedStatus();
     }
 
     function setupLineNumbersAndCaret() {
@@ -1895,45 +1871,51 @@ while True:
         });
       }
 
-      if (tabBtnWorksheets) tabBtnWorksheets.addEventListener("click", () => renderDrawerList("worksheets"));
-      if (tabBtnAssessment) tabBtnAssessment.addEventListener("click", () => renderDrawerList("assessment"));
-      if (tabBtnProject) tabBtnProject.addEventListener("click", () => renderDrawerList("project"));
-
-      if (viewInstructionsMobileBtn) {
-        viewInstructionsMobileBtn.addEventListener("click", () => {
-          if (mobileInstructionsSheet) {
-            mobileInstructionsSheet.classList.toggle("hidden");
-            viewInstructionsMobileBtn.textContent = mobileInstructionsSheet.classList.contains("hidden") ? "المطلوب ▾" : "إخفاء ▴";
-          }
-        });
-      }
-
-      // لوحة المعلمة
-      if (secretLogoTrigger) secretLogoTrigger.addEventListener("click", openTeacherModal);
-      if (closeTeacherModalBtn) closeTeacherModalBtn.addEventListener("click", () => {
-        if (teacherModal) teacherModal.classList.add("hidden");
+      if (refreshDataBtn) refreshDataBtn.addEventListener("click", () => {
+        loadTeacherSubmissions();
+        updateActivePublishedStatus();
       });
-      if (verifyPinBtn) verifyPinBtn.addEventListener("click", verifyTeacherPin);
-      if (teacherPinInput) {
-        teacherPinInput.addEventListener("keydown", (e) => {
-          if (e.key === "Enter") verifyTeacherPin();
+
+      if (deleteActivePublishBtn) {
+        deleteActivePublishBtn.addEventListener("click", removeActivePublishedActivities);
+      }
+
+      if (closeConfirmModalBtn) {
+        closeConfirmModalBtn.addEventListener("click", () => {
+          if (publishSuccessConfirmModal) publishSuccessConfirmModal.classList.add("hidden");
         });
       }
 
-      if (filterClassSelect) filterClassSelect.addEventListener("change", loadTeacherSubmissions);
-      if (refreshDataBtn) refreshDataBtn.addEventListener("click", loadTeacherSubmissions);
+      // نسخ رابط المعلمة السري المحمي بـ PIN
+      if (copyTeacherSecretLinkBtn) {
+        copyTeacherSecretLinkBtn.addEventListener("click", () => {
+          const originUrl = window.location.origin && window.location.origin !== "null" && !window.location.origin.includes("blob")
+            ? window.location.origin
+            : "https://python-language-web.vercel.app";
+          const secretLink = `${originUrl}/?role=teacher&teacher=${activeTeacher.id}`;
+          copyTextToClipboard(secretLink);
+          showToast("🔗 تم نسخ الرابط السري الخاص بالمعلمة (احفظيه ولا تشاركيه مع الطالبات)!");
+        });
+      }
 
       if (copyTeacherLinkBtn) {
         copyTeacherLinkBtn.addEventListener("click", () => {
-          const link = `${window.location.origin}${window.location.pathname}?teacher=${activeTeacher.id}`;
-          const input = document.createElement("input");
-          input.value = link;
-          document.body.appendChild(input);
-          input.select();
-          document.execCommand("copy");
-          document.body.removeChild(input);
+          const originUrl = window.location.origin && window.location.origin !== "null" && !window.location.origin.includes("blob")
+            ? window.location.origin
+            : "https://python-language-web.vercel.app";
+          const link = `${originUrl}/?teacher=${activeTeacher.id}`;
+          copyTextToClipboard(link);
           showToast("📋 تم نسخ الرابط الخاص بطالباتكِ بنجاح!");
         });
+      }
+
+      function copyTextToClipboard(text) {
+        const input = document.createElement("input");
+        input.value = text;
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand("copy");
+        document.body.removeChild(input);
       }
 
       if (exportExcelBtn) {
